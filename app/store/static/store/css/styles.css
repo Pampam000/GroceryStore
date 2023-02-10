@@ -1,0 +1,157 @@
+/* main styles --> */
+
+.page {
+  font-family: SFProText;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.page__main-content-wrapper {
+  max-width: 1440px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.page__main-content {
+  margin-bottom: 100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page__title {
+  font-family: SFProText;
+  font-size: 44px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 62px;
+  letter-spacing: 0;
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.page__items-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-column-gap: 65px;
+  -webkit-column-gap: 65px;
+  column-gap: 65px;
+  grid-row-gap: 50px;
+  row-gap: 50px;
+  margin-bottom: 50px;
+}
+
+.page__link {
+  color: #161c24;
+  text-decoration: none;
+  font-family: SFProDisplay;
+}
+
+.card {
+  width: 300px;
+  height: 342px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.card__image-wrapper {
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+}
+
+.card__title {
+  margin-top: 16px;
+  font-family: SFProText;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+/* detail styles */
+
+.card-details {
+  display: flex;
+  justify-content: space-around;
+  font-family: SFProText;
+}
+
+.card-details__inner {
+  max-width: 1440px;
+  width: 100%;
+}
+
+.card-details__top-section {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 40px;
+}
+
+.card-details__top-section-block-wrapper {
+  max-width: 605px;
+
+}
+
+.card-details__top-section-left-block-wrapper{
+    margin-right: 30px;
+}
+
+.card-details__top-section-top-row {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.card-description {
+  font-family: SFProText;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 30px;
+  color: #161c24;
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.energy-value {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid blue;
+  border-bottom: 1px solid blue;
+  padding: 10px 0;
+}
+
+.energy-value__wrapper-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+
+.card_detail_info {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0 0 0;
+}
+
+.card_detail_title {
+    color:#4d4d4f;
+}
+
+.card_detail_value {
+  font-weight: bold;
+  font-size: 24px;
+  color: rgb(66, 66, 66);
+}
+
+.card_detail_help_info {
+    color:gray;
+}
+
