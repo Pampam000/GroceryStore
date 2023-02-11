@@ -7,18 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('store', '0003_alter_product_packing_date_alter_product_sell_before'),
+        ('store', '0002_alter_product_packing_date_alter_product_sell_before'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='product',
             name='packing_date',
-            field=models.DateTimeField(default=datetime.datetime(2023, 2, 11, 3, 49, 11, 250842)),
+            field=models.DateTimeField(default=datetime.datetime(2023, 2, 11, 3, 49, 7, 438237)),
         ),
         migrations.AlterField(
             model_name='product',
             name='sell_before',
-            field=models.DateTimeField(default=datetime.datetime(2023, 2, 18, 7, 49, 11, 250863)),
+            field=models.DateTimeField(default=datetime.datetime(2023, 2, 18, 7, 49, 7, 438258)),
         ),
     ]

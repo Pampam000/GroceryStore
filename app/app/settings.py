@@ -128,3 +128,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 MINIATURE_PHOTO_SIZE = (300, 300)
+MIDDLE_PHOTO_SIZE = (600, 600)
