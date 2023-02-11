@@ -1,25 +1,47 @@
-from django.core.handlers.wsgi import WSGIRequest
-from django.shortcuts import render
+from django.views.generic import ListView, DetailView
 
 from .models import Category, Product
 
 
-def index(request):
-    categories = Category.objects.all()
-    return render(request, 'store/products_and_categories.html',
-                  {'title': 'Categories', 'items': categories})
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'store/products_and_categories.html'
+    context_object_name = 'items'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'GroceryStore'
+        context['name'] = 'Categories'
+        return context
 
 
-def show_products_in_category(request: WSGIRequest, name):
-    category = Category.objects.get(slug=name)
-    # products = Product.objects.filter(category=1)
-    products = category.category_products.all()
+class ProductListView(ListView):
+    model = Product
+    template_name = 'store/products_and_categories.html'
+    context_object_name = 'items'
 
-    return render(request, 'store/products_and_categories.html',
-                  {'title': name, 'items': products})
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if context['items']:
+            title = context['items'][0].category
+        else:
+            title = Category.objects.get(slug=self.kwargs['category_slug'])
+        context['title'] = title
+        context['name'] = title
+        return context
+
+    def get_queryset(self):
+        return Product.objects.filter(category__slug=
+                                      self.kwargs['category_slug'])
 
 
-def show_product_info(request, name):
-    product = Product.objects.get(slug=name)
-    return render(request, 'store/product.html',
-                  {'title': name, 'product': product})
+class ProductDetail(DetailView):
+    model = Product
+    template_name = 'store/product.html'
+    context_object_name = 'product'
+    slug_url_kwarg = 'name'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.kwargs['name']
+        return context

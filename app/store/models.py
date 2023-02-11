@@ -73,7 +73,7 @@ class Product(md.InstanceImage, m.Model):
 
 
 class Category(md.InstanceImage, m.Model):
-    name = m.CharField(unique=True, max_length=50)
+    name = m.CharField(primary_key=True, max_length=50)
     slug = m.SlugField(max_length=100, db_index=True, verbose_name='URL',
                        unique=True)
     photo = m.ImageField(upload_to=md.get_photo_path_for_category)
@@ -82,7 +82,7 @@ class Category(md.InstanceImage, m.Model):
         verbose_name_plural = 'Categories'
 
     def get_absolute_url(self):
-        return reverse('products_in_category', kwargs={'name': self.slug})
+        return reverse('products_in_category', kwargs={'category_slug': self.slug})
 
     def __str__(self):
         return self.name
