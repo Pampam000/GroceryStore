@@ -9,11 +9,13 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name', 'category__name')
     list_editable = ('is_available',)
     list_filter = ('name', 'price', 'is_available', 'sell_before')
+    prepopulated_fields = {'slug': ('name',)}
 
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
 
 
 class ProducerAdmin(admin.ModelAdmin):

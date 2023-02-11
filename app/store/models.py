@@ -9,6 +9,8 @@ from .services import models as md
 
 class Product(md.InstanceImage, m.Model):
     name = m.CharField(max_length=50)
+    slug = m.SlugField(max_length=100, db_index=True, verbose_name='URL',
+                       unique=True)
     price = m.DecimalField(default=20, decimal_places=2, max_digits=5,
                            validators=[MinValueValidator(limit_value=1)])
     amount = m.PositiveIntegerField(default=100)
@@ -37,7 +39,7 @@ class Product(md.InstanceImage, m.Model):
     max_temperature = m.SmallIntegerField(default=+8)
 
     def get_absolute_url(self):
-        return reverse('product', kwargs={'name': self.name})
+        return reverse('product', kwargs={'name': self.slug})
 
     def store_conditions(self) -> str:
         min_t = self.__check_temperature_sign(self.min_temperature)
@@ -72,13 +74,15 @@ class Product(md.InstanceImage, m.Model):
 
 class Category(md.InstanceImage, m.Model):
     name = m.CharField(unique=True, max_length=50)
+    slug = m.SlugField(max_length=100, db_index=True, verbose_name='URL',
+                       unique=True)
     photo = m.ImageField(upload_to=md.get_photo_path_for_category)
 
     class Meta:
         verbose_name_plural = 'Categories'
 
     def get_absolute_url(self):
-        return reverse('products_in_category', kwargs={'name': self.name})
+        return reverse('products_in_category', kwargs={'name': self.slug})
 
     def __str__(self):
         return self.name

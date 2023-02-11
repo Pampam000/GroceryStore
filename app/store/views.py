@@ -11,7 +11,7 @@ def index(request):
 
 
 def show_products_in_category(request: WSGIRequest, name):
-    category = Category.objects.get(name=name)
+    category = Category.objects.get(slug=name)
     # products = Product.objects.filter(category=1)
     products = category.category_products.all()
 
@@ -20,6 +20,6 @@ def show_products_in_category(request: WSGIRequest, name):
 
 
 def show_product_info(request, name):
-    product = Product.objects.get(name=name)
+    product = Product.objects.get(slug=name)
     return render(request, 'store/product.html',
                   {'title': name, 'product': product})
