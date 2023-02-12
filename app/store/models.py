@@ -7,20 +7,57 @@ from django.urls import reverse
 from .services import models as md
 
 
+class Category(md.InstanceImage, m.Model):
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    name = m.CharField(primary_key=True, max_length=50)
+    slug = m.SlugField(max_length=100, db_index=True, verbose_name="URL")
+    photo = m.ImageField(upload_to=md.get_photo_path_for_category)
+
+    def get_absolute_url(self):
+        return reverse('products_in_category',
+                       kwargs={'category_slug': self.slug})
+
+    def __str__(self):
+        return self.name
+
+
+class Producer(m.Model):
+    name = m.CharField(primary_key=True, max_length=50)
+    country = m.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(md.InstanceImage, m.Model):
+    class Meta:
+        unique_together = ('name', 'weight', 'measure', 'producer')
+
+    class Measure(m.TextChoices):
+        kg = 'kg', 'kg'
+        g = 'g', 'g'
+        l = 'l', 'l'
+        ml = 'ml', 'ml'
+
     name = m.CharField(max_length=50)
-    slug = m.SlugField(max_length=100, db_index=True, verbose_name='URL',
-                       unique=True)
-    price = m.DecimalField(default=20, decimal_places=2, max_digits=5,
-                           validators=[MinValueValidator(limit_value=1)])
-    amount = m.PositiveIntegerField(default=100)
+    producer = m.ForeignKey('Producer', on_delete=m.PROTECT)
+    weight = m.DecimalField(default=1, max_digits=4, decimal_places=2,
+                            validators=[MinValueValidator(limit_value=1)],
+                            verbose_name='volume/weight')
+    measure = m.CharField(max_length=5, choices=Measure.choices)
+    slug = m.SlugField(max_length=100, db_index=True,  verbose_name="URL")
+    amount = m.PositiveSmallIntegerField(default=0)
+    price = m.DecimalField(
+        default=20, max_digits=5, decimal_places=2,
+        validators=[MinValueValidator(limit_value=1)])
+
     photo = m.ImageField(upload_to=md.get_photo_path_for_product)
-    time_created = m.DateTimeField(auto_now_add=True)
+
     is_available = m.BooleanField(default=True, auto_created=True)
-    producer = m.ForeignKey('Producer', on_delete=m.PROTECT,
-                            related_name='producers_products')
-    category = m.ForeignKey('Category', on_delete=m.PROTECT,
-                            related_name='category_products')
+
+    category = m.ForeignKey('Category', on_delete=m.PROTECT)
 
     description = m.TextField(null=True, blank=True)
     discount_size = m.PositiveSmallIntegerField(
@@ -31,10 +68,6 @@ class Product(md.InstanceImage, m.Model):
     fats = m.PositiveSmallIntegerField(**md.params)
     carbohydrates = m.PositiveSmallIntegerField(**md.params)
 
-    packing_date = m.DateTimeField(default=datetime.now() -
-                                           timedelta(hours=4))
-    sell_before = m.DateTimeField(default=datetime.now()
-                                          + timedelta(days=7))
     min_temperature = m.SmallIntegerField(default=-5)
     max_temperature = m.SmallIntegerField(default=+8)
 
@@ -49,22 +82,9 @@ class Product(md.InstanceImage, m.Model):
     def total_price(self):
         return round(float(self.price) * (1 - self.discount_size / 100), 2)
 
-    @property
-    def is_new(self):
-        return (datetime.now() - self.time_created.replace(tzinfo=None)
-                ).days <= 14
-
-    @property
-    def is_close_to_expire(self):
-        return (self.sell_before.replace(tzinfo=None) - datetime.now()
-                ).days < 2
-
-    @property
-    def is_expired(self):
-        return datetime.now() >= self.sell_before.replace(tzinfo=None)
-
     def __str__(self):
-        return self.name
+        return f"{self.name} {self.producer.name} {float(self.weight)} " \
+               f"{self.measure}"
 
     @staticmethod
     def __check_temperature_sign(temp: int) -> str:
@@ -72,25 +92,23 @@ class Product(md.InstanceImage, m.Model):
         return f'+{str_temp}' if temp > 0 else str_temp
 
 
-class Category(md.InstanceImage, m.Model):
-    name = m.CharField(primary_key=True, max_length=50)
-    slug = m.SlugField(max_length=100, db_index=True, verbose_name='URL',
-                       unique=True)
-    photo = m.ImageField(upload_to=md.get_photo_path_for_category)
-
+class ProductBatch(m.Model):
     class Meta:
-        verbose_name_plural = 'Categories'
+        verbose_name_plural = 'Product Batches'
 
-    def get_absolute_url(self):
-        return reverse('products_in_category', kwargs={'category_slug': self.slug})
+    product = m.ForeignKey('Product', on_delete=m.PROTECT)
+    amount = m.PositiveIntegerField(default=100)
+    purchase_price = m.DecimalField(
+        default=10, decimal_places=2, max_digits=5,
+        validators=[MinValueValidator(limit_value=1)])
+    time_created = m.DateTimeField(auto_now_add=True)
+    packing_date = m.DateTimeField(default=datetime.now() - timedelta(hours=4))
+    sell_before = m.DateTimeField(default=datetime.now() + timedelta(days=7))
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.product.amount += self.amount
+        self.product.save()
 
     def __str__(self):
-        return self.name
-
-
-class Producer(m.Model):
-    name = m.CharField(unique=True, max_length=50)
-    country = m.CharField(max_length=20)
-
-    def __str__(self):
-        return self.name
+        return self.product.__str__()

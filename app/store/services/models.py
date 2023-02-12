@@ -6,8 +6,8 @@ from django.db import models as m
 
 from app import settings as st
 
-params = {'validators': [MaxValueValidator(limit_value=999)],
-          'help_text': 'per_100_grams', 'default': 120}
+params = {'default': 120, 'validators': [MaxValueValidator(limit_value=999)],
+          'help_text': 'per_100_grams', }
 
 sizes = {'_small.': st.MINIATURE_PHOTO_SIZE,
          '_middle.': st.MIDDLE_PHOTO_SIZE}

@@ -1,15 +1,15 @@
 from django.contrib import admin
 
-from .models import Product, Producer, Category
+from .models import Product, Producer, Category, ProductBatch
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'amount', 'price', 'is_close_to_expire',
-                    'is_expired', 'sell_before', 'is_available')
+    list_display = ('name', 'producer', 'weight', 'measure', 'price',
+                    'is_available')
     search_fields = ('name', 'category__name')
     list_editable = ('is_available',)
-    list_filter = ('name', 'price', 'is_available', 'sell_before')
-    prepopulated_fields = {'slug': ('name',)}
+    list_filter = ('name', 'price', 'is_available')
+    prepopulated_fields = {'slug': ('name', 'producer', 'weight', 'measure')}
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -26,3 +26,4 @@ class ProducerAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Producer, ProducerAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(ProductBatch)
