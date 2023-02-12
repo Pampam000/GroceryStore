@@ -1,0 +1,7 @@
+{% extends 'store/products_and_categories.html' %}
+
+{% block content2 %}
+{% if item.product_set.all %}
+{% include 'store/card.html' %}
+{% endif %}
+{% endblock %}

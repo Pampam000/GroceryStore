@@ -5,10 +5,16 @@ from .models import Category, Product
 
 class CategoryListView(ListView):
     model = Category
-    template_name = 'store/products_and_categories.html'
+    template_name = 'store/category_list.html'
     context_object_name = 'items'
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Only not empty categories will view in html
+        :param object_list:
+        :param kwargs:
+        :return:
+        """
         context = super().get_context_data(**kwargs)
         context['title'] = 'GroceryStore'
         context['name'] = 'Categories'
@@ -17,22 +23,25 @@ class CategoryListView(ListView):
 
 class ProductListView(ListView):
     model = Product
-    template_name = 'store/products_and_categories.html'
+    template_name = 'store/product_list.html'
     context_object_name = 'items'
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        'context["items"]' checking is in template 'category_list.html',
+         so it's unnecessary to check it again here
+        :param object_list:
+        :param kwargs:
+        :return:
+        """
         context = super().get_context_data(**kwargs)
-        if context['items']:
-            title = context['items'][0].category
-        else:
-            title = Category.objects.get(slug=self.kwargs['category_slug'])
-        context['title'] = title
-        context['name'] = title
+        context['title'] = context['items'][0].category
+        context['name'] = context['items'][0].category
         return context
 
     def get_queryset(self):
-        return Product.objects.filter(category__slug=
-                                      self.kwargs['category_slug'])
+        return Product.objects.filter(
+            category__slug=self.kwargs['category_slug'])
 
 
 class ProductDetail(DetailView):

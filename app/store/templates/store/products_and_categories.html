@@ -1,33 +1,20 @@
 {% extends 'store/base.html' %}
 
+
+
 {% block content %}
-
-
 <div class="page">
     <div class="page__main-content-wrapper">
         <div class="page__main-content">
             <h2 class="page__title">{{name}}</h2>
-            {% if items %}
             <div class="page__items-grid">
-                 {% for item in items %}
-                <a class="page__link"
-                   href="{{ item.get_absolute_url }}">
-                    <div class="card">
-                        <div class="card__image-wrapper">
-                            <img class="card__image"
-                                 src="{{item.get_miniature_photo}}">
-                        </div>
-                        <h3 class="card__title">{{item}}</h3>
-                    </div>
-                </a>
+                {% for item in items %}
+                {% block content2 %}
+                {% endblock %}
                 {% endfor %}
             </div>
-            {% else %}
-                <h2>No products in this category :(</h2>
-            {% endif %}
         </div>
     </div>
 </div>
-
-
 {% endblock %}
+
