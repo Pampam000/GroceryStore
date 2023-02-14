@@ -4,13 +4,14 @@ from PIL import Image
 from django.core.validators import MaxValueValidator
 from django.db import models as m
 
-from app import settings as st
+from . import config
 
 params = {'default': 120, 'validators': [MaxValueValidator(limit_value=999)],
           'help_text': 'per_100_grams', }
 
-sizes = {'_small.': st.MINIATURE_PHOTO_SIZE,
-         '_middle.': st.MIDDLE_PHOTO_SIZE}
+sizes = {'_extra_small.': config.XS_PHOTO_SIZE,
+         '_small.': config.S_PHOTO_SIZE,
+         '_middle.': config.M_PHOTO_SIZE}
 
 
 def get_photo_path_for_product(product, photo):
@@ -23,6 +24,10 @@ def get_photo_path_for_category(category, photo):
 
 class InstanceImage:
     photo = m.ImageField()
+
+    def get_extra_small_photo(self):
+        size = '_extra_small.'
+        return self.__get_photo(size)
 
     def get_miniature_photo(self):
         size = '_small.'

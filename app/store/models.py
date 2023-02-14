@@ -16,7 +16,7 @@ class Category(md.InstanceImage, m.Model):
     photo = m.ImageField(upload_to=md.get_photo_path_for_category)
 
     def get_absolute_url(self):
-        return reverse('products_in_category',
+        return reverse('store:products_in_category',
                        kwargs={'category_slug': self.slug})
 
     def __str__(self):
@@ -72,7 +72,7 @@ class Product(md.InstanceImage, m.Model):
     max_temperature = m.SmallIntegerField(default=+8)
 
     def get_absolute_url(self):
-        return reverse('product', kwargs={'name': self.slug})
+        return reverse('store:product', kwargs={'name': self.slug})
 
     def store_conditions(self) -> str:
         min_t = self.__check_temperature_sign(self.min_temperature)
@@ -81,6 +81,9 @@ class Product(md.InstanceImage, m.Model):
 
     def total_price(self):
         return round(float(self.price) * (1 - self.discount_size / 100), 2)
+
+    def buy(self):
+        return reverse('buy', kwargs={'name': self.slug})
 
     def __str__(self):
         return f"{self.name} {self.producer.name} {float(self.weight)} " \

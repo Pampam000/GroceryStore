@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'store.apps.StoreConfig'
+    'store.apps.StoreConfig',
+    'cart'
 ]
 
 MIDDLEWARE = [
@@ -127,5 +128,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-MINIATURE_PHOTO_SIZE = (300, 300)
-MIDDLE_PHOTO_SIZE = (600, 600)
+CART_SESSION_ID = 'cart'

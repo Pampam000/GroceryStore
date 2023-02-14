@@ -1,6 +1,13 @@
-from django.views.generic import ListView, DetailView
+from django.contrib.auth import logout, login
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView
+from setuptools._entry_points import render
 
 from .models import Category, Product
+from cart.forms import CartAddProductForm
 
 
 class CategoryListView(ListView):
@@ -53,4 +60,7 @@ class ProductDetail(DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.kwargs['name']
+        context['cart_product_form'] = CartAddProductForm()
         return context
+
+

@@ -91,6 +91,17 @@
                     <div class='card_detail_value'>
                       {{ product.total_price }} $
                     </div>
+
+
+                </div>
+                <div>
+
+                    <p class="price">${{ product.price }}</p>
+                    <form action="{% url 'cart_add' product.id %}" method="post">
+                    {{ cart_product_form }}
+                    {% csrf_token %}
+                        <input type="submit" value="Add to cart">
+                    </form>
                 </div>
 
             </div>
