@@ -56,5 +56,3 @@ class ProductDetail(DetailView):
         context['title'] = self.kwargs['name']
         context['cart_product_form'] = CartAddProductForm()
         return context
-
-

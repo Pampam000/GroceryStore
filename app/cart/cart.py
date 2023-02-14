@@ -1,5 +1,7 @@
 from decimal import Decimal
+
 from django.conf import settings
+
 from store.models import Product
 
 
@@ -79,4 +81,3 @@ class Cart:
         """
         del self.session[settings.CART_SESSION_ID]
         self.session.modified = True
-
