@@ -21,7 +21,8 @@ from . import settings as st
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^cart/', include('cart.urls')),
-    path('', include(('store.urls', 'store'), namespace='store') )
+    path('', include(('store.urls', 'store'), namespace='store')),
+    path('', include('user.urls'))
 ]
 
 if st.DEBUG:
