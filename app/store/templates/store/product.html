@@ -96,21 +96,13 @@
                 </div>
                 <div>
 
-                    {% if request.user.is_authenticated %}
-
-                    <form action="{% url 'cart_add' product.id %}"
+                    <form action="{% url 'cart_add' product.slug %}"
                           method="post">
                     {{ cart_product_form }}
                     {% csrf_token %}
                         <input type="submit" value="Add to cart">
                     </form>
-                    {% else %}
-                    <form action="{% url 'log-in' %}" method="post">
-                    {{ cart_product_form }}
-                    {% csrf_token %}
-                        <input type="submit" value="Add to cart">
-                    </form>
-                    {% endif %}
+
                 </div>
 
             </div>

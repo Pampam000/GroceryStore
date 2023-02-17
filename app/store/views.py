@@ -51,7 +51,7 @@ class ProductDetail(DetailView):
     context_object_name = 'product'
     slug_url_kwarg = 'name'
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.kwargs['name']
         context['cart_product_form'] = CartAddProductForm()

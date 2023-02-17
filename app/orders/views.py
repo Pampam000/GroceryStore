@@ -1,40 +1,39 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView
 
-from .models import OrderItem
+from cart.views import CartView
 from .forms import OrderCreateForm
-from cart.cart import Cart
+from .models import OrderItem, Order
+from .services.views import CartChecker
 
 
-class OrderCreateView(LoginRequiredMixin, CreateView):
-
+class OrderCreateView(CartView):
+    object = None
+    model = Order
     form_class = OrderCreateForm
     template_name = 'orders/create.html'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.cart = None
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.cart = Cart(self.request)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['cart'] = self.cart
+
+        result = CartChecker(self.cart).check_cart_items_in_db()
+
+        context['title'] = 'Create Order'
+        context['cart'] = result.cart
+        context['messages'] = result.messages
+
         return context
 
     def form_valid(self, form):
-
         order = form.save(commit=False)
         order.user = self.request.user
         order.save()
 
         for item in self.cart:
-            OrderItem.objects.create(order=order,
-                                     product=item['product'],
+            OrderItem.objects.create(order=order, product=item['product'],
                                      quantity=item['quantity'])
+            item['product'].amount -= item['quantity']
+            item['product'].save()
+
         self.cart.clear()
 
         return redirect('orders:success', order)

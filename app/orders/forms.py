@@ -8,3 +8,6 @@ class OrderCreateForm(f.ModelForm):
         model = Order
         fields = ['address']
 
+    #def is_valid(self):
+
+

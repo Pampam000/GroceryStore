@@ -9,6 +9,12 @@ class OrderItemInline(admin.TabularInline):
 
 class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
+    list_display = ('pk', 'user', 'address', 'is_paid')
 
+
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'order', 'quantity', 'get_product_total_price', 'get_cost')
 
 admin.site.register(Order, OrderAdmin)
+
+admin.site.register(OrderItem, OrderItemAdmin)

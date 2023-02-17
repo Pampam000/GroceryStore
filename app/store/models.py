@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import decimal as d
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models as m
@@ -15,12 +16,12 @@ class Category(md.InstanceImage, m.Model):
     slug = m.SlugField(max_length=100, db_index=True, verbose_name="URL")
     photo = m.ImageField(upload_to=md.get_photo_path_for_category)
 
+    def __str__(self):
+        return self.name
+
     def get_absolute_url(self):
         return reverse('store:products_in_category',
                        kwargs={'category_slug': self.slug})
-
-    def __str__(self):
-        return self.name
 
 
 class Producer(m.Model):
@@ -47,7 +48,7 @@ class Product(md.InstanceImage, m.Model):
                             validators=[MinValueValidator(limit_value=1)],
                             verbose_name='volume/weight')
     measure = m.CharField(max_length=5, choices=Measure.choices)
-    slug = m.SlugField(max_length=100, db_index=True,  verbose_name="URL")
+    slug = m.SlugField(max_length=100, db_index=True, verbose_name="URL")
     amount = m.PositiveSmallIntegerField(default=0)
     price = m.DecimalField(
         default=20, max_digits=5, decimal_places=2,
@@ -71,23 +72,24 @@ class Product(md.InstanceImage, m.Model):
     min_temperature = m.SmallIntegerField(default=-5)
     max_temperature = m.SmallIntegerField(default=+8)
 
+    def __str__(self):
+        return f"{self.name} {self.producer.name} {float(self.weight)} " \
+               f"{self.measure}"
+
     def get_absolute_url(self):
         return reverse('store:product', kwargs={'name': self.slug})
 
     def store_conditions(self) -> str:
-        min_t = self.__check_temperature_sign(self.min_temperature)
-        max_t = self.__check_temperature_sign(self.max_temperature)
-        return f'{min_t} to {max_t}'
+        return '{} to {}'.format(
+            self.__check_temperature_sign(self.min_temperature),
+            self.__check_temperature_sign(self.max_temperature))
 
-    def total_price(self):
-        return round(float(self.price) * (1 - self.discount_size / 100), 2)
+    def total_price(self) -> d.Decimal:
+        return (self.price * d.Decimal(str(1 - self.discount_size / 100))). \
+            quantize(d.Decimal('1.00'), d.ROUND_HALF_UP)
 
     def buy(self):
         return reverse('buy', kwargs={'name': self.slug})
-
-    def __str__(self):
-        return f"{self.name} {self.producer.name} {float(self.weight)} " \
-               f"{self.measure}"
 
     @staticmethod
     def __check_temperature_sign(temp: int) -> str:
@@ -108,10 +110,10 @@ class ProductBatch(m.Model):
     packing_date = m.DateTimeField(default=datetime.now() - timedelta(hours=4))
     sell_before = m.DateTimeField(default=datetime.now() + timedelta(days=7))
 
+    def __str__(self):
+        return str(self.product)
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.product.amount += self.amount
         self.product.save()
-
-    def __str__(self):
-        return self.product.__str__()

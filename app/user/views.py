@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
+from app import settings
 from user.forms import CreateUserForm
 
 
@@ -33,6 +34,7 @@ class LogIn(LoginView):
         return context
 
     def get_success_url(self):
+        self.request.session[settings.CART_SESSION_ID] = {}
         return reverse_lazy('store:home')
 
 

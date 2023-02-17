@@ -25,7 +25,8 @@
                     </td>
                     <td>{{ product.name }}</td>
                     <td>{{ item.quantity }}</td>
-                    <td><a href="{% url 'cart_remove' product.id%}">Remove</a></td>
+                    <td><a href="{% url 'cart_remove' product.slug%}">
+                        Remove</a></td>
                     <td>${{ item.price }}</td>
                     <td>{{ item.total_price }}</td>
                 </tr>

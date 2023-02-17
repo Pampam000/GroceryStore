@@ -1,31 +1,52 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_POST
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.views.generic import CreateView
 
 from store.models import Product
 from .cart import Cart
 from .forms import CartAddProductForm
 
 
-@require_POST
-def cart_add(request, product_id):
-    cart = Cart(request)
-    product = get_object_or_404(Product, id=product_id)
-    form = CartAddProductForm(request.POST)
+class CartView(LoginRequiredMixin, CreateView):
 
-    if form.is_valid():
-        cd = form.cleaned_data
-        cart.add(product=product, quantity=cd['quantity'])
+    def handle_no_permission(self):
+        return redirect('log-in')
 
-    return redirect('store:product', product.slug)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.cart = None
 
-
-def cart_remove(request, product_id):
-    cart = Cart(request)
-    product = get_object_or_404(Product, id=product_id)
-    cart.remove(product)
-    return redirect('cart_detail')
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.cart = Cart(self.request.session)
 
 
-def cart_detail(request):
-    cart = Cart(request)
-    return render(request, 'cart/detail.html', {'title': 'Cart', 'cart': cart})
+class CartAddItemView(CartView):
+    form_class = CartAddProductForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        product = Product.objects.get(slug=kwargs['product_slug'])
+
+        if form.is_valid():
+            self.cart.add(
+                product=product, quantity=form.cleaned_data['quantity'])
+
+        return redirect('store:product', product.slug)
+
+
+class CartDetailView(CartView):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'cart/detail.html',
+                      {'title': 'Cart', 'cart': self.cart})
+
+
+class CartRemoveItemView(CartView):
+    def get(self, request, *args, **kwargs):
+        product = Product.objects.get(slug=kwargs['product_slug'])
+        self.cart.remove(product)
+        return redirect('cart_detail')
