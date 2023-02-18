@@ -2,6 +2,7 @@ from django.views.generic import ListView, DetailView
 
 from cart.forms import CartAddProductForm
 from .models import Category, Product
+from .services import config
 
 
 class CategoryListView(ListView):
@@ -18,8 +19,20 @@ class CategoryListView(ListView):
         """
         context = super().get_context_data(**kwargs)
         context['title'] = 'GroceryStore'
+        context['menu'] = config.BASE_MENU
         context['name'] = 'Categories'
         return context
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        if request.user.is_authenticated:
+            context['right_section'] = config.LOGOUT_MENU
+        else:
+            context['right_section'] = config.LOGIN_MENU
+
+        return self.render_to_response(context)
 
 
 class ProductListView(ListView):
@@ -38,7 +51,19 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = context['items'][0].category
         context['name'] = context['items'][0].category
+        context['menu'] = config.BASE_MENU
         return context
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        if request.user.is_authenticated:
+            context['right_section'] = config.LOGOUT_MENU
+        else:
+            context['right_section'] = config.LOGIN_MENU
+
+        return self.render_to_response(context)
 
     def get_queryset(self):
         return Product.objects.filter(
@@ -55,4 +80,17 @@ class ProductDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['title'] = self.kwargs['name']
         context['cart_product_form'] = CartAddProductForm()
+        context['menu'] = config.BASE_MENU
         return context
+
+    def get(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+
+        if request.user.is_authenticated:
+            context['right_section'] = config.LOGOUT_MENU
+        else:
+            context['right_section'] = config.LOGIN_MENU
+
+        return self.render_to_response(context)

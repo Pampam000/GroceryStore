@@ -9,7 +9,32 @@
           href="{% static 'store/css/styles.css' %}" rel="stylesheet">
 </head>
 <body>
+<div class="header__content">
+    <div>
+        <nav class="header__navigation">
+            <ul class="header__navigation-list">
+                {% for m in menu %}
+                <li class="header__navigation-list-item">
+                    <a href="{% url m.url_name %}">{{ m.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
 
+        </nav>
+    </div>
+
+    <div class="header__right-section">
+        <ul class="header__navigation-list">
+
+            {% for s in right_section %}
+            <li class="header__navigation-list-item">
+                <a href="{% url s.url_name %}">{{ s.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
 {% block content %}
 {% endblock %}
 </body>

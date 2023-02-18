@@ -10,7 +10,9 @@ class Cart:
     def __init__(self, session):
 
         self.session = session
-        self.cart = session[settings.CART_SESSION_ID]
+        if not self.session.get(settings.CART_SESSION_ID):
+            self.session[settings.CART_SESSION_ID] = {}
+        self.cart = self.session[settings.CART_SESSION_ID]
 
     def __iter__(self):
         """
