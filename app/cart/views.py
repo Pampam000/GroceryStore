@@ -24,7 +24,7 @@ class CartDetailView(MenuMixin, CartView):
 
     def get(self, request, *args, **kwargs):
         return render(request, 'cart/detail.html',
-                      self.get_header_context(title='Log-in', cart=self.cart))
+                      self.get_header_context(title='Cart', cart=self.cart))
 
 
 class CartRemoveItemView(CartView):

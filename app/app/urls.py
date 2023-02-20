@@ -21,11 +21,13 @@ from . import settings as st
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^cart/', include('cart.urls')),
-    re_path(r'^orders/', include(('orders.urls', 'orders'), namespace='orders')),
+    re_path(r'^orders/',
+            include(('orders.urls', 'orders'), namespace='orders')),
     path('', include(('store.urls', 'store'), namespace='store')),
     path('', include('user.urls')),
 
 ]
 
 if st.DEBUG:
+    urlpatterns.insert(0, path('__debug__/', include('debug_toolbar.urls')))
     urlpatterns += static(st.MEDIA_URL, document_root=st.MEDIA_ROOT)

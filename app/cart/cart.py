@@ -14,6 +14,9 @@ class Cart:
             self.session[settings.CART_SESSION_ID] = {}
         self.cart = self.session[settings.CART_SESSION_ID]
 
+        self.iter = 0
+        self.products = []
+
     def __iter__(self):
         """
         Iterating through the items in the cart and getting the products from
@@ -22,15 +25,25 @@ class Cart:
 
         product_ids = self.cart.keys()
         # getting product objects and adding them to cart
-        products = Product.objects.filter(id__in=product_ids)
-        for product in products:
-            self.cart[str(product.id)]['product'] = product
+        self.products = Product.objects.filter(
+            id__in=product_ids).select_related(
+            'producer')
+        return self
 
-        for item in self.cart.values():
+    def __next__(self):
+
+        if self.iter >= len(self.products):
+            self.iter = 0
+            self.products = []
+            raise StopIteration
+        else:
+            product = self.products[self.iter]
+            self.cart[str(product.pk)]['product'] = product
+            item = list(self.cart.values())[self.iter]
             item['price'] = Decimal(item['price'])
             item['total_price'] = item['price'] * item['quantity']
-
-            yield item
+            self.iter += 1
+            return item
 
     def __len__(self):
         """
