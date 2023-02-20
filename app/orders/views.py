@@ -4,9 +4,10 @@ from cart.views import CartView
 from .forms import OrderCreateForm
 from .models import OrderItem, Order
 from .services.views import CartChecker
+from store.services.views import MenuMixin
 
 
-class OrderCreateView(CartView):
+class OrderCreateView(MenuMixin, CartView):
     object = None
     model = Order
     form_class = OrderCreateForm
@@ -16,12 +17,9 @@ class OrderCreateView(CartView):
         context = super().get_context_data(**kwargs)
 
         result = CartChecker(self.cart).check_cart_items_in_db()
-
-        context['title'] = 'Create Order'
-        context['cart'] = result.cart
-        context['messages'] = result.messages
-
-        return context
+        header_context = self.get_header_context(
+            title='Create Order', cart=result.cart, messages=result.messages)
+        return context | header_context
 
     def form_valid(self, form):
         order = form.save(commit=False)

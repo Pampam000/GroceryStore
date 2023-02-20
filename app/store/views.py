@@ -2,75 +2,46 @@ from django.views.generic import ListView, DetailView
 
 from cart.forms import CartAddProductForm
 from .models import Category, Product
-from .services import config
+from .services.views import MenuMixin
 
 
-class CategoryListView(ListView):
+class CategoryListView(MenuMixin, ListView):
     model = Category
     template_name = 'store/category_list.html'
     context_object_name = 'items'
 
     def get_context_data(self, *, object_list=None, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        header_context = self.get_header_context(title='GroceryStore',
+                                                 name='Categories')
+        return context | header_context
+
+    def get_queryset(self):
         """
         Only not empty categories will view in html
-        :param object_list:
-        :param kwargs:
-        :return:
         """
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'GroceryStore'
-        context['menu'] = config.BASE_MENU
-        context['name'] = 'Categories'
-        return context
-
-    def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        context = self.get_context_data()
-
-        if request.user.is_authenticated:
-            context['right_section'] = config.LOGOUT_MENU
-        else:
-            context['right_section'] = config.LOGIN_MENU
-
-        return self.render_to_response(context)
+        return Category.objects.filter(product__isnull=False).distinct()
 
 
-class ProductListView(ListView):
+class ProductListView(MenuMixin, ListView):
     model = Product
     template_name = 'store/product_list.html'
     context_object_name = 'items'
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        """
-        'context["items"]' checking is in template 'category_list.html',
-         so it's unnecessary to check it again here
-        :param object_list:
-        :param kwargs:
-        :return:
-        """
+
         context = super().get_context_data(**kwargs)
-        context['title'] = context['items'][0].category
-        context['name'] = context['items'][0].category
-        context['menu'] = config.BASE_MENU
-        return context
-
-    def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        context = self.get_context_data()
-
-        if request.user.is_authenticated:
-            context['right_section'] = config.LOGOUT_MENU
-        else:
-            context['right_section'] = config.LOGIN_MENU
-
-        return self.render_to_response(context)
+        title = context['items'][0].category
+        header_context = self.get_header_context(title=title, name=title)
+        return context | header_context
 
     def get_queryset(self):
         return Product.objects.filter(
             category__slug=self.kwargs['category_slug'])
 
 
-class ProductDetail(DetailView):
+class ProductDetail(MenuMixin, DetailView):
     model = Product
     template_name = 'store/product.html'
     context_object_name = 'product'
@@ -78,19 +49,6 @@ class ProductDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = self.kwargs['name']
-        context['cart_product_form'] = CartAddProductForm()
-        context['menu'] = config.BASE_MENU
-        return context
-
-    def get(self, request, *args, **kwargs):
-
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-
-        if request.user.is_authenticated:
-            context['right_section'] = config.LOGOUT_MENU
-        else:
-            context['right_section'] = config.LOGIN_MENU
-
-        return self.render_to_response(context)
+        header_context = self.get_header_context(
+            title=self.kwargs['name'], cart_product_form=CartAddProductForm())
+        return context | header_context
