@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
 import decimal as d
+import json
+from datetime import datetime, timedelta
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models as m
@@ -88,8 +89,13 @@ class Product(md.InstanceImage, m.Model):
         return (self.price * d.Decimal(str(1 - self.discount_size / 100))). \
             quantize(d.Decimal('1.00'), d.ROUND_HALF_UP)
 
-    def buy(self):
-        return reverse('buy', kwargs={'name': self.slug})
+    def as_cart_item(self):
+        return json.dumps(
+            {self.slug: {
+                "name": str(self),
+                "price": str(self.price),
+                "total_price": str(self.total_price()),
+                "photo": self.get_extra_small_photo()}})
 
     @staticmethod
     def __check_temperature_sign(temp: int) -> str:

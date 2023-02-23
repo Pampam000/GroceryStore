@@ -1,8 +1,12 @@
+import json
 from decimal import Decimal
 
 from django.conf import settings
+from django.db.models import QuerySet
 
+from orders.models import Order, OrderItem
 from store.models import Product
+from .services import messages
 
 
 class Cart:
@@ -13,93 +17,135 @@ class Cart:
         if not self.session.get(settings.CART_SESSION_ID):
             self.session[settings.CART_SESSION_ID] = {}
         self.cart = self.session[settings.CART_SESSION_ID]
+        self.sorted_cart = {}
+        self.warning_messages = []
 
-        self.iter = 0
-        self.products = []
-
-    def __iter__(self):
+    def add(self, product: dict, quantity: int):
         """
-        Iterating through the items in the cart and getting the products from
-        the database.
+        Add product to db
+        :param product: format is
+             {"slug":{
+                    "name": str,
+                    "price": str,
+                    "total_price": str),
+                    "photo": str
+                    }
+            }
+        :type product: dict
+        :param quantity:
+        :type quantity: int
         """
+        slug = [key for key in product][0]
 
-        product_ids = self.cart.keys()
-        # getting product objects and adding them to cart
-        self.products = Product.objects.filter(
-            id__in=product_ids).select_related(
-            'producer')
-        return self
-
-    def __next__(self):
-
-        if self.iter >= len(self.products):
-            self.iter = 0
-            self.products = []
-            raise StopIteration
+        if slug not in self.cart:
+            product[slug]['quantity'] = quantity
+            self.cart |= product
+            self.__set_total_product_price(slug, product)
         else:
-            product = self.products[self.iter]
-            self.cart[str(product.pk)]['product'] = product
-            item = list(self.cart.values())[self.iter]
-            item['price'] = Decimal(item['price'])
-            item['total_price'] = item['price'] * item['quantity']
-            self.iter += 1
-            return item
+            self.cart[slug]['quantity'] += quantity
+            self.__set_total_product_price(slug, product)
 
-    def __len__(self):
+        self.__save()
+
+    def remove(self, slug: str):
         """
-        Counting all items in the cart.
+        Removing an item from the cart.
         """
+        if slug in self.cart:
+            del self.cart[slug]
+            self.__save()
 
-        return sum(item['quantity'] for item in self.cart.values())
-
-    def add(self, product: Product, quantity: int = 1):
+    def sort(self, slugs: list[str]):
         """
-        Add product to cart
+        Sorting cart according to product order in db
         """
-        product_id = str(product.pk)
-        if product_id not in self.cart:
-            self.cart[product_id] = {'quantity': 0,
-                                     'price': str(product.total_price())}
+        self.sorted_cart = self.__sort_help(self.cart, slugs)
+        self.__save()
 
-        self.cart[product_id]['quantity'] += quantity
+    def check_products_amount(self, products: QuerySet[Product]):
+        for slug, product in zip(self.sorted_cart.copy(), products):
+            if self.sorted_cart[slug]['quantity'] > product.amount:
 
-        self.save()
+                if not product.amount:
+                    self.__product_is_over(product, slug)
+                else:
+                    self.__quantity_is_less_then_possible_amount(product, slug)
 
-    def save(self):
+        self.cart = self.__sort_help(self.sorted_cart, list(self.cart.keys()))
+        self.__save()
+
+    def create_order_items(self, order: Order, products: QuerySet[Product]):
+        self.check_products_amount(products)
+
+        if not self.warning_messages:
+            for slug, product in zip(self.sorted_cart.copy(), products):
+                OrderItem.objects.create(
+                    order=order, product=product,
+                    quantity=self.sorted_cart[slug]['quantity'])
+
+                product.amount -= self.sorted_cart[slug]['quantity']
+                product.save()
+                self.__clear()
+            return True
+        else:
+            return False
+
+    def get_total_sum(self):
         """
-        Cart session update
+        Calculate the cost of all items in the shopping cart.
         """
+        return sum(Decimal(self.cart[i]['total']) for i in self.cart)
 
-        self.session[settings.CART_SESSION_ID] = self.cart
-
-        # Mark session as "modified" to make sure it's saved
-        self.session.modified = True
-
-    def remove(self, product: Product, save: bool = True):
-        """
-           Removing an item from the cart.
-        """
-
-        product_id = str(product.pk)
-        if product_id in self.cart:
-            del self.cart[product_id]
-            if save:
-                self.save()
-
-    def get_total_price(self):
-        """
-        Calculate the cost of items in the shopping cart.
-        """
-        return sum(self.get_item_total_price(item) for item in
-                   self.cart.values())
-
-    def clear(self):
+    def __clear(self):
         """
         Delete cart from session
         """
-        del self.session[settings.CART_SESSION_ID]
+        self.cart = {}
+        self.__save()
+
+    def __save(self):
+        """
+        Cart session update
+        """
+        self.session[settings.CART_SESSION_ID] = self.cart
         self.session.modified = True
 
     @staticmethod
-    def get_item_total_price(item: dict):
-        return Decimal(item['price']) * item['quantity']
+    def __sort_help(dict_: dict, list_: list) -> dict:
+        """
+        Sorting a dict_ according to list_
+        Example:
+        >>> d={\
+        'main_key2': {'key': 'value'},\
+        'main_key1': {'key': 'value'}\
+        }
+        >>> l = ["main_key2", "main_key1"]
+        >>> __sort_help(d, l)
+        {'main_key2': {'key': 'value'}, 'main_key1': {'key': 'value'}}
+
+        """
+        return dict(sorted(dict_.items(),
+                           key=lambda item: list_.index(item[0])))
+
+    def __set_total_product_price(self, slug: str, product: dict,
+                                  is_sorted: bool = False):
+
+        cart = self.cart if not is_sorted else self.sorted_cart
+
+        cart[slug]['total'] = str(cart[slug]['quantity'] * Decimal(
+            product[slug]['total_price']))
+
+    def __product_is_over(self, product: Product, slug: str):
+        msg = messages.PRODUCT_IS_OVER.format(product=product)
+        self.warning_messages.append(msg)
+        del self.sorted_cart[slug]
+
+    def __quantity_is_less_then_possible_amount(self, product: Product,
+                                                slug: str):
+        msg = messages.QUANTITY_IS_LESS_THEN_POSSIBLE_AMOUNT.format(
+            quan=self.cart[slug]['quantity'], product=product,
+            amount=product.amount)
+        self.warning_messages.append(msg)
+        self.sorted_cart[slug]['quantity'] = product.amount
+        self.__set_total_product_price(
+            slug, json.loads(product.as_cart_item()), True)

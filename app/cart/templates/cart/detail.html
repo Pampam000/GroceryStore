@@ -2,43 +2,42 @@
 
 
 {% block content %}
-    <h1>Your shopping cart</h1>
-    <table>
-        <thead>
-        <tr>
-            <th>Image</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Remove</th>
-            <th>Unit price</th>
-            <th>Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in cart %}
-            {% with product=item.product %}
-                <tr>
-                    <td>
-                        <a href="{{ product.get_absolute_url }}">
-                            <img src="{{ product.get_extra_small_photo }}">
-                        </a>
-                    </td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td><a href="{% url 'cart_remove' product.slug%}">
-                        Remove</a></td>
-                    <td>${{ item.price }}</td>
-                    <td>{{ item.total_price }}</td>
-                </tr>
-            {% endwith %}
-        {% endfor %}
-        <tr class="total">
-            <td>Total</td>
-            <td colspan="4"></td>
-            <td>${{ cart.get_total_price }}</td>
-        </tr>
-        </tbody>
-    </table>
+<h1>Your shopping cart</h1>
+<table>
+    <thead>
+    <tr>
+
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Unit price</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Remove</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for key, value in cart.cart.items %}
+    <tr>
+
+        <td>{{ value.name }}</td>
+        <td>{{ value.quantity }}</td>
+        <td>{{ value.price }} $</td>
+        <td>{{ value.total_price }} $</td>
+        <td>{{ value.total }} $</td>
+        <td>
+            <a href="{% url 'cart_remove' key%}">Remove</a>
+        </td>
+    </tr>
+
+    {% endfor %}
+    <tr class="total">
+        <td>Total</td>
+        <td colspan="3"></td>
+        <td>{{ cart.get_total_sum }} $</td>
+    </tr>
+    </tbody>
+</table>
 <a href="{% url 'orders:order_create' %}" class="button">
     Checkout
 </a>

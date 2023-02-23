@@ -96,10 +96,26 @@
                 </div>
                 <div>
 
-                    <form action="{% url 'cart_add' product.slug %}"
+                    <form action="{% url 'cart_add' %}"
                           method="post">
-                    {{ cart_product_form }}
-                    {% csrf_token %}
+
+                        {% for field in cart_product_form %}
+                        {% with nam=field.name %}
+                        {% if nam == 'product' %}
+                         <input type="hidden"
+                                name={{nam}}
+                                value="{{product.as_cart_item}}">
+                        {% elif nam == 'from_url' %}
+                        <input type="hidden"
+                                name={{nam}}
+                                value="{{product.get_absolute_url}}">
+                        {% else %}
+                        <input type="number" name="quantity" min="1" required id="id_quantity">
+                        {% endif %}
+                        {% endwith %}
+                        {% endfor %}
+                        {% csrf_token %}
+
                         <input type="submit" value="Add to cart">
                     </form>
 

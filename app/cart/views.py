@@ -1,34 +1,48 @@
 from django.shortcuts import render, redirect
 
-from store.models import Product
+from app import settings
 from store.services.views import MenuMixin
+from .cart import Cart
 from .forms import CartAddProductForm
-from .services.views import CartView
+from .services.views import CartMixin
 
 
-class CartAddItemView(CartView):
-    form_class = CartAddProductForm
+class CartAddItemView(CartMixin):
 
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        product = Product.objects.get(slug=kwargs['product_slug'])
+    @staticmethod
+    def post(request):
+        form = CartAddProductForm(request.POST)
 
         if form.is_valid():
-            self.cart.add(
-                product=product, quantity=form.cleaned_data['quantity'])
+            data = form.cleaned_data
+            product = data['product']
+            quantity = data['quantity']
+            cart = Cart(request.session)
+            cart.add(product, quantity)
 
-        return redirect('store:product', product.slug)
-
-
-class CartDetailView(MenuMixin, CartView):
-
-    def get(self, request, *args, **kwargs):
-        return render(request, 'cart/detail.html',
-                      self.get_header_context(title='Cart', cart=self.cart))
+            return redirect(data['from_url'])
 
 
-class CartRemoveItemView(CartView):
-    def get(self, request, *args, **kwargs):
-        product = Product.objects.get(slug=kwargs['product_slug'])
-        self.cart.remove(product)
+class CartDetailView(MenuMixin, CartMixin):
+
+    def handle_no_permission(self):
+        return redirect('log-in')
+
+    def get_context_data(self):
+        if not self.request.session.get(settings.CART_SESSION_ID):
+            self.request.session[settings.CART_SESSION_ID] = {}
+
+        cart = Cart(self.request.session)
+        header_context = self.get_header_context(title="Cart", cart=cart)
+        return header_context
+
+    def get(self, request):
+        return render(request, 'cart/detail.html', self.get_context_data())
+
+
+class CartRemoveItemView(CartMixin):
+    @staticmethod
+    def get(request, **kwargs):
+        cart = Cart(request.session)
+        cart.remove(kwargs['product_slug'])
         return redirect('cart_detail')

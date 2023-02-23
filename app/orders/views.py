@@ -1,24 +1,34 @@
+from django.db.models import QuerySet
 from django.shortcuts import render, redirect
+from django.views.generic import CreateView
 
-from cart.views import CartView
-from .forms import OrderCreateForm
-from .models import OrderItem, Order
-from .services.views import CartChecker
+from cart.services.views import CartMixin
+from store.models import Product
 from store.services.views import MenuMixin
+from .forms import OrderCreateForm
+from .models import Order
 
 
-class OrderCreateView(MenuMixin, CartView):
+class OrderCreateView(MenuMixin, CartMixin, CreateView):
     object = None
     model = Order
     form_class = OrderCreateForm
     template_name = 'orders/create.html'
+    products = None
 
-    def get_context_data(self, **kwargs):
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.products = QuerySet()
+
+    def get_context_data(self, need_to_prepare: bool = True, **kwargs):
         context = super().get_context_data(**kwargs)
+        if need_to_prepare:
+            self.__prepare_for_working_with_cart()
+            self.cart.check_products_amount(self.products)
 
-        result = CartChecker(self.cart).check_cart_items_in_db()
         header_context = self.get_header_context(
-            title='Create Order', cart=result.cart, messages=result.messages)
+            title='Create Order', cart=self.cart)
+
         return context | header_context
 
     def form_valid(self, form):
@@ -26,15 +36,19 @@ class OrderCreateView(MenuMixin, CartView):
         order.user = self.request.user
         order.save()
 
-        for item in self.cart:
-            OrderItem.objects.create(order=order, product=item['product'],
-                                     quantity=item['quantity'])
-            item['product'].amount -= item['quantity']
-            item['product'].save()
+        self.__prepare_for_working_with_cart()
 
-        self.cart.clear()
+        if self.cart.create_order_items(order, self.products):
+            return redirect('orders:success', order)
+        else:
+            order.delete()
+            return self.render_to_response(self.get_context_data(
+                need_to_prepare=False))
 
-        return redirect('orders:success', order)
+    def __prepare_for_working_with_cart(self):
+        self.products = Product.objects.filter(slug__in=self.cart.cart)
+        slugs = [x.slug for x in self.products]
+        self.cart.sort(slugs)
 
 
 def success(request, order):

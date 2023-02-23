@@ -2,9 +2,9 @@
 
 {% block content %}
     <h1>Make order</h1>
-    {% if messages %}
+    {% if cart.warning_messages %}
     <div>
-        {% for msg in messages %}
+        {% for msg in cart.warning_messages %}
         <p>{{ msg }}</p>
         {% endfor %}
     </div>
@@ -13,15 +13,15 @@
     <div>
         <h3>Your order</h3>
         <ul>
-            {% for item in cart %}
+            {% for value in cart.cart.values %}
                 <li>
-                     {{ item.quantity }} x {{ item.product.name }}
-                    {{item.price}}
-                    <span>{{ item.total_price }} $</span>
+                     {{ value.quantity }} x {{ value.name }}
+                    {{value.price}}
+                    <span>{{ value.total_price }} $</span>
                 </li>
             {% endfor %}
         </ul>
-        <p>Total: {{ cart.get_total_price }} $</p>
+        <p>Total: {{ cart.get_total_sum }} $</p>
     </div>
 
     <form action="." method="post">
