@@ -118,8 +118,3 @@ class ProductBatch(m.Model):
 
     def __str__(self):
         return str(self.product)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.product.amount = m.F('amount') + self.amount
-        self.product.save(update_fields=['amount'])

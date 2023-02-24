@@ -35,10 +35,6 @@ class PhotoAbstractModel(m.Model):
 
     photo = m.ImageField()
 
-    def delete(self, using=None, keep_parents=False):
-        self.__delete_all_instance_photos()
-        super().delete(using=using, keep_parents=keep_parents)
-
     def get_extra_small_photo(self) -> str:
         size = '_extra_small.'
         return self.__get_photo(size)
@@ -51,7 +47,7 @@ class PhotoAbstractModel(m.Model):
         size = '_middle.'
         return self.__get_photo(size)
 
-    def __delete_all_instance_photos(self) -> None:
+    def delete_all_instance_photos(self) -> None:
         result = self.__get_photo_name_and_path()
         shutil.rmtree(result.path)
 

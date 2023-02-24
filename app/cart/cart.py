@@ -84,9 +84,6 @@ class Cart:
                 OrderItem.objects.create(
                     order=order, product=product, quantity=quantity)
 
-                product.amount = F('amount') - quantity
-
-                product.save(update_fields=['amount'])
                 self.__clear()
             return True
         else:

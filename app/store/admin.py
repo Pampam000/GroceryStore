@@ -3,13 +3,7 @@ from django.contrib import admin as a
 from .models import Product, Producer, Category, ProductBatch
 
 
-class ModelAdminWithImage(a.ModelAdmin):
-    def delete_queryset(self, request, queryset):
-        for i in queryset:
-            i.delete()
-
-
-class ProductAdmin(ModelAdminWithImage):
+class ProductAdmin(a.ModelAdmin):
     list_display = ('name', 'producer', 'weight', 'measure', 'price',
                     'is_available', 'amount')
     search_fields = ('name', 'category__name')
@@ -18,7 +12,7 @@ class ProductAdmin(ModelAdminWithImage):
     prepopulated_fields = {'slug': ('name', 'producer', 'weight', 'measure')}
 
 
-class CategoryAdmin(ModelAdminWithImage):
+class CategoryAdmin(a.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
