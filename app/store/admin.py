@@ -1,9 +1,15 @@
-from django.contrib import admin
+from django.contrib import admin as a
 
 from .models import Product, Producer, Category, ProductBatch
 
 
-class ProductAdmin(admin.ModelAdmin):
+class ModelAdminWithImage(a.ModelAdmin):
+    def delete_queryset(self, request, queryset):
+        for i in queryset:
+            i.delete()
+
+
+class ProductAdmin(ModelAdminWithImage):
     list_display = ('name', 'producer', 'weight', 'measure', 'price',
                     'is_available', 'amount')
     search_fields = ('name', 'category__name')
@@ -12,18 +18,18 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name', 'producer', 'weight', 'measure')}
 
 
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdminWithImage):
     list_display = ('name',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
 
 
-class ProducerAdmin(admin.ModelAdmin):
+class ProducerAdmin(a.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
 
-admin.site.register(Product, ProductAdmin)
-admin.site.register(Producer, ProducerAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(ProductBatch)
+a.site.register(Product, ProductAdmin)
+a.site.register(Producer, ProducerAdmin)
+a.site.register(Category, CategoryAdmin)
+a.site.register(ProductBatch)

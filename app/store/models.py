@@ -1,15 +1,18 @@
 import decimal as d
 import json
+import os.path
+import shutil
 from datetime import datetime, timedelta
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models as m
 from django.urls import reverse
 
+from app import settings
 from .services import models as md
 
 
-class Category(md.InstanceImage, m.Model):
+class Category(md.PhotoAbstractModel):
     class Meta:
         verbose_name_plural = 'Categories'
 
@@ -33,7 +36,7 @@ class Producer(m.Model):
         return self.name
 
 
-class Product(md.InstanceImage, m.Model):
+class Product(md.PhotoAbstractModel):
     class Meta:
         unique_together = ('name', 'weight', 'measure', 'producer')
 

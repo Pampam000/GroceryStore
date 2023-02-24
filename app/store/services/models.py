@@ -1,4 +1,6 @@
 import os.path
+import shutil
+from typing import NamedTuple
 
 from PIL import Image
 from django.core.validators import MaxValueValidator
@@ -22,39 +24,57 @@ def get_photo_path_for_category(category, photo):
     return f"photos/categories/{category.name}/{photo}"
 
 
-class InstanceImage:
+class PhotoPath(NamedTuple):
+    photo: str
+    path: str
+
+
+class PhotoAbstractModel(m.Model):
+    class Meta:
+        abstract = True
+
     photo = m.ImageField()
 
-    def get_extra_small_photo(self):
+    def delete(self, using=None, keep_parents=False):
+        self.__delete_all_instance_photos()
+        super().delete(using=using, keep_parents=keep_parents)
+
+    def get_extra_small_photo(self) -> str:
         size = '_extra_small.'
         return self.__get_photo(size)
 
-    def get_miniature_photo(self):
+    def get_miniature_photo(self) -> str:
         size = '_small.'
         return self.__get_photo(size)
 
-    def get_middle_sized_photo(self):
+    def get_middle_sized_photo(self) -> str:
         size = '_middle.'
         return self.__get_photo(size)
 
-    def __get_photo(self, size: str):
-        photo_name, file_path = self.__get_photo_name_and_path()
-        if self.__replace_dot_in_str(photo_name, size) in \
-                os.listdir(file_path):
+    def __delete_all_instance_photos(self) -> None:
+        result = self.__get_photo_name_and_path()
+        shutil.rmtree(result.path)
+
+    def __get_photo(self, size: str) -> str:
+        result = self.__get_photo_name_and_path()
+        if self.__replace_dot_in_str(result.photo, size) in \
+                os.listdir(result.path):
             return self.__replace_dot_in_str(self.photo.url, size)
         else:
             return self.__create_photo(size)
 
-    def __get_photo_name_and_path(self):
+    def __get_photo_name_and_path(self) -> PhotoPath:
         photo_name = os.path.basename(self.photo.name)
-        return photo_name, self.photo.path.rstrip(photo_name)
+        path = self.photo.path.rstrip(photo_name)
 
-    def __create_photo(self, size: str):
+        return PhotoPath(photo=photo_name, path=path)
+
+    def __create_photo(self, size: str) -> str:
         with Image.open(self.photo.path) as img:
             new_img = img.resize(sizes[size])
             new_img.save(self.__replace_dot_in_str(self.photo.path, size))
             return self.__replace_dot_in_str(self.photo.url, size)
 
     @staticmethod
-    def __replace_dot_in_str(str_: str, size: str):
+    def __replace_dot_in_str(str_: str, size: str) -> str:
         return str_.replace('.', size)
