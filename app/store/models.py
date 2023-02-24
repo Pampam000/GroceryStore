@@ -1,14 +1,11 @@
 import decimal as d
 import json
-import os.path
-import shutil
 from datetime import datetime, timedelta
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models as m
 from django.urls import reverse
 
-from app import settings
 from .services import models as md
 
 
@@ -124,5 +121,5 @@ class ProductBatch(m.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.product.amount += self.amount
-        self.product.save()
+        self.product.amount = m.F('amount') + self.amount
+        self.product.save(update_fields=['amount'])

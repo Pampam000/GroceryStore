@@ -2,7 +2,7 @@ import json
 from decimal import Decimal
 
 from django.conf import settings
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F
 
 from orders.models import Order, OrderItem
 from store.models import Product
@@ -79,12 +79,14 @@ class Cart:
 
         if not self.warning_messages:
             for slug, product in zip(self.sorted_cart.copy(), products):
-                OrderItem.objects.create(
-                    order=order, product=product,
-                    quantity=self.sorted_cart[slug]['quantity'])
+                quantity = self.sorted_cart[slug]['quantity']
 
-                product.amount -= self.sorted_cart[slug]['quantity']
-                product.save()
+                OrderItem.objects.create(
+                    order=order, product=product, quantity=quantity)
+
+                product.amount = F('amount') - quantity
+
+                product.save(update_fields=['amount'])
                 self.__clear()
             return True
         else:
