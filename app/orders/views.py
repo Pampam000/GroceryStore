@@ -1,3 +1,4 @@
+from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import QuerySet
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView
@@ -11,15 +12,10 @@ from .models import Order
 
 
 class OrderCreateView(MenuMixin, CartMixin, CreateView):
-    object = None
     model = Order
     form_class = OrderCreateForm
     template_name = 'orders/create.html'
-    products = None
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.products = QuerySet()
+    products = QuerySet()
 
     def get_context_data(self, need_to_prepare: bool = True, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,6 +59,6 @@ class SuccessMakingOrder(MenuMixin, ContextMixin, View):
             title='Success', page_title='Order has been made successfully')
         return context | header_context
 
-    def get(self, request, **kwargs):
+    def get(self, request: WSGIRequest, **kwargs):
         data = self.get_context_data(**kwargs)
         return render(request, 'orders/created.html', data)

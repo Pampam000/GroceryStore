@@ -129,13 +129,19 @@ STATICFILES_DIRS = []
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# Session
 CART_SESSION_ID = 'cart'
+AUTH_FROM_URL_SESSION_ID = 'auth_from_url'
 
+# Auth
 AUTH_USER_MODEL = 'user.User'
 
+
+# Debug Toolbar
 INTERNAL_IPS = [
     "127.0.0.1",
 ]

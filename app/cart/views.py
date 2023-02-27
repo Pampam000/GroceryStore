@@ -1,3 +1,4 @@
+from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render, redirect
 
 from app import settings
@@ -10,9 +11,8 @@ from .services.views import CartMixin
 class CartAddItemView(CartMixin):
 
     @staticmethod
-    def post(request):
+    def post(request: WSGIRequest):
         form = CartAddProductForm(request.POST)
-
         if form.is_valid():
             data = form.cleaned_data
             product = data['product']
@@ -25,10 +25,8 @@ class CartAddItemView(CartMixin):
 
 class CartDetailView(MenuMixin, CartMixin):
 
-    def handle_no_permission(self):
-        return redirect('log-in')
-
     def get_context_data(self):
+        print(dict(**self.request.session))
         if not self.request.session.get(settings.CART_SESSION_ID):
             self.request.session[settings.CART_SESSION_ID] = {}
         cart = Cart(self.request.session)
@@ -37,13 +35,14 @@ class CartDetailView(MenuMixin, CartMixin):
             total_sum=cart.get_total_sum())
         return header_context
 
-    def get(self, request):
+    def get(self, request: WSGIRequest):
         return render(request, 'cart/detail.html', self.get_context_data())
 
 
 class CartRemoveItemView(CartMixin):
+
     @staticmethod
-    def get(request, **kwargs):
+    def get(request: WSGIRequest, **kwargs):
         cart = Cart(request.session)
         cart.remove(kwargs['product_slug'])
         return redirect(request.META["HTTP_REFERER"])

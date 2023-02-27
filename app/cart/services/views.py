@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import redirect
 from django.views import View
 
@@ -11,6 +12,6 @@ class CartMixin(LoginRequiredMixin, View):
     def handle_no_permission(self):
         return redirect('log-in')
 
-    def setup(self, request, *args, **kwargs):
+    def setup(self, request: WSGIRequest, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.cart = Cart(self.request.session)
