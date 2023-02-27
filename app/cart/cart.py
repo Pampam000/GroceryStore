@@ -2,7 +2,7 @@ import json
 from decimal import Decimal
 
 from django.conf import settings
-from django.db.models import QuerySet, F
+from django.db.models import QuerySet
 
 from orders.models import Order, OrderItem
 from store.models import Product
@@ -19,6 +19,7 @@ class Cart:
         self.cart = self.session[settings.CART_SESSION_ID]
         self.sorted_cart = {}
         self.warning_messages = []
+        self.error_messages = []
 
     def add(self, product: dict, quantity: int):
         """
@@ -87,6 +88,8 @@ class Cart:
                 self.__clear()
             return True
         else:
+
+            self.error_messages.append(messages.ERROR)
             return False
 
     def get_total_sum(self):

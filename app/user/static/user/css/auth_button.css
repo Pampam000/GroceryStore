@@ -1,0 +1,8 @@
+
+.auth_btn {
+  background-color: gray;
+}
+
+.auth_btn:hover {
+   background-color:  #606060;
+}

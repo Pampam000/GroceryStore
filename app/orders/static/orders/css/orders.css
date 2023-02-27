@@ -1,0 +1,44 @@
+.error,
+.warning,
+.table_order {
+  text-align:center;
+}
+
+.table_order {
+  font-size: 14px;
+  width: 100%;
+}
+
+.table_order th {
+border-bottom: 2px solid #F5E1A6;
+padding: 5px;
+min-width:70px;
+height:30px;
+}
+
+.table_order td {
+padding: 5px;
+color: #331818;
+}
+
+.error {
+  background:pink;
+}
+
+.warning {
+  background:#F0E68C;
+}
+
+.order_form_wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.place_order {
+  background-color: #62d200;
+}
+
+.place_order:hover {
+   background-color:  #90EE00
+}

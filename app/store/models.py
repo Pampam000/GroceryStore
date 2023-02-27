@@ -97,6 +97,23 @@ class Product(md.PhotoAbstractModel):
                 "total_price": str(self.total_price()),
                 "photo": self.get_extra_small_photo()}})
 
+    def get_energy_value(self) -> dict:
+        return {
+            "Kcal": self.calories,
+            "Proteins": self.proteins,
+            "Fats": self.fats,
+            "Carbs": self.carbohydrates
+        }
+
+    def get_detail_info(self) -> dict:
+        return {
+            "Producer": f"{self.producer}, {self.producer.country}",
+            "Store at": self.store_conditions(),
+            "Discount": f"{self.discount_size} %",
+            "Price": f"{self.price} $",
+            "Total price": f"{self.total_price()} $"
+        }
+
     @staticmethod
     def __check_temperature_sign(temp: int) -> str:
         str_temp = f"{temp}°C"

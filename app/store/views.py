@@ -7,13 +7,13 @@ from .services.views import MenuMixin
 
 class CategoryListView(MenuMixin, ListView):
     model = Category
-    template_name = 'store/category_list.html'
+    template_name = 'store/list.html'
     context_object_name = 'items'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         header_context = self.get_header_context(title='GroceryStore',
-                                                 name='Categories')
+                                                 page_title='Categories')
         return context | header_context
 
     def get_queryset(self):
@@ -25,15 +25,14 @@ class CategoryListView(MenuMixin, ListView):
 
 class ProductListView(MenuMixin, ListView):
     model = Product
-    template_name = 'store/product_list.html'
+    template_name = 'store/list.html'
     context_object_name = 'items'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(self.kwargs)
 
         title = self.kwargs['category_slug']
-        header_context = self.get_header_context(title=title, name=title)
+        header_context = self.get_header_context(title=title, page_title=title)
         return context | header_context
 
     def get_queryset(self):
@@ -50,8 +49,9 @@ class ProductDetail(MenuMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        title = self.kwargs['name']
         header_context = self.get_header_context(
-            title=self.kwargs['name'], cart_product_form=CartAddProductForm())
+            title=title, form=CartAddProductForm(), page_title=title)
         return context | header_context
 
     def get_queryset(self):

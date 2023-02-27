@@ -1,0 +1,29 @@
+
+
+.table_cart {
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.table_cart th {
+	font-weight: bold;
+	padding: 5px;
+	background: #efefef;
+	border: 1px solid #dddddd;
+}
+
+.table_cart td {
+	padding: 5px;
+	text-align: center;
+}
+
+
+.checkout {
+  background-color: #d78a00;
+  margin-left: 10px;
+
+}
+
+.checkout:hover {
+   background-color:  #d7b000;
+}

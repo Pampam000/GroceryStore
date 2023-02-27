@@ -1,6 +1,7 @@
 from django.db.models import QuerySet
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView
+from django.views.generic.base import ContextMixin, View
 
 from cart.services.views import CartMixin
 from store.models import Product
@@ -27,7 +28,10 @@ class OrderCreateView(MenuMixin, CartMixin, CreateView):
             self.cart.check_products_amount(self.products)
 
         header_context = self.get_header_context(
-            title='Create Order', cart=self.cart)
+            title='Create Order', page_title='Making Order',
+            cart=self.cart.cart, error_messages=self.cart.error_messages,
+            warning_messages=self.cart.warning_messages,
+            total_sum=self.cart.get_total_sum(), btn_text='Place Order')
 
         return context | header_context
 
@@ -51,6 +55,14 @@ class OrderCreateView(MenuMixin, CartMixin, CreateView):
         self.cart.sort(slugs)
 
 
-def success(request, order):
-    return render(request, 'orders/created.html',
-                  {'order': order})
+class SuccessMakingOrder(MenuMixin, ContextMixin, View):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        header_context = self.get_header_context(
+            title='Success', page_title='Order has been made successfully')
+        return context | header_context
+
+    def get(self, request, **kwargs):
+        data = self.get_context_data(**kwargs)
+        return render(request, 'orders/created.html', data)

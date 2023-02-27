@@ -1,0 +1,42 @@
+<table class={{class_name}}>
+    <thead>
+    <tr>
+        <th>Image</th>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Old price</th>
+        <th>New Price</th>
+        <th>Total</th>
+        <th>Remove</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for key, value in cart.items %}
+    <tr>
+
+        <td>
+            <a href="{% url 'store:product' key %}">
+                <img src="{{ value.photo }}">
+            </a>
+        </td>
+        <td>{{ value.name }}</td>
+        <td>{{ value.quantity }}</td>
+        <td>{{ value.price }} $</td>
+        <td>{{ value.total_price }} $</td>
+        <td>{{ value.total }} $</td>
+        <td>
+            <form action="{% url 'cart_remove' key %}">
+                <button class="remove">Remove</button>
+            </form>
+        </td>
+    </tr>
+
+    {% endfor %}
+    <tr>
+
+        <td colspan="5"></td>
+        <td>{{ total_sum }} $</td>
+    </tr>
+    </tbody>
+</table>

@@ -1,0 +1,102 @@
+.card-details,
+.card-details__top-section,
+.card-details__top-section-top-row,
+.energy-value,
+.energy-value__wrapper-info,
+.card_detail_info {
+  display:flex;
+}
+
+.card-details {
+  justify-content: space-around;
+}
+
+.card-details__inner {
+  max-width: 1440px;
+  width: 100%;
+}
+
+.card-details__top-section {
+  justify-content: space-evenly;
+  margin-bottom: 40px;
+}
+
+.card-details__right-section-block-wrapper,
+.card-details__left-section-block-wrapper {
+  max-width: 605px;
+}
+
+.card-details__left-section-block-wrapper{
+    margin-right: 30px;
+}
+
+.card-details__top-section-top-row {
+  margin-bottom: 16px;
+}
+
+.card-description {
+  font-size: 24px;
+  color: #161c24;
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.energy-value {
+  flex-direction: column;
+  border-top: 1px solid blue;
+  border-bottom: 1px solid blue;
+  padding: 10px 0;
+}
+
+.energy-value__wrapper-info {
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+
+.card_detail_info {
+  flex-direction: column;
+  padding: 10px 0 0 0;
+}
+
+.card_detail_title {
+    color:#4d4d4f;
+}
+
+.card_detail_value {
+  font-weight: bold;
+  font-size: 24px;
+  color: rgb(66, 66, 66);
+}
+
+.card_detail_help_info {
+    color:gray;
+}
+
+.form_add {
+  margin-top:20px
+}
+
+.input_number,
+.input_submit {
+  border-radius:4px;
+}
+
+.input_number {
+  height: 35px;
+  width:100px;
+  border: 1px solid #ebecec;
+  text-align:center;
+}
+
+.input_submit {
+  background-color: #4295e4;
+  margin-left: 10px;
+}
+
+.input_submit:hover {
+   background-color:  #56A9F8;
+}
+
+
+

@@ -1,0 +1,25 @@
+.form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.form input {
+    width: 300px;
+    height:40px;
+    font-size: 16px;
+    border-radius:4px;
+    border:1px solid gray;
+    display:flex;
+}
+
+.form-label {
+    display: inline-block;
+    width: 200px;
+}
+
+.form-error ul {
+    list-style: none;
+    padding: 0;
+    color: #CC0000;
+}

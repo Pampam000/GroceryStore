@@ -11,11 +11,12 @@ from store.services.views import MenuMixin
 
 class CreateUser(MenuMixin, CreateView):
     form_class = CreateUserForm
-    template_name = 'user/sign-up.html'
+    template_name = 'user/auth.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        header_context = self.get_header_context(title='Sign-up')
+        header_context = self.get_header_context(
+            title='Sign-up', page_title="Sign up", btn_text="Sign up")
         return context | header_context
 
     def form_valid(self, form):
@@ -26,11 +27,12 @@ class CreateUser(MenuMixin, CreateView):
 
 class LogIn(MenuMixin, LoginView):
     form_class = AuthenticationForm
-    template_name = 'user/log-in.html'
+    template_name = 'user/auth.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        header_context = self.get_header_context(title='Log-in')
+        header_context = self.get_header_context(
+            title='Log-in', page_title='Log in', btn_text="Log in", )
         return context | header_context
 
     def get_success_url(self):

@@ -1,44 +1,27 @@
 {% extends 'store/base.html' %}
 
+{% load static %}
+{% block extra_style %}
+<link type="text/css"
+      href="{% static 'cart/css/cart.css' %}" rel="stylesheet">
+<link type="text/css"
+      href="{% static 'store/css/button.css' %}" rel="stylesheet">
+{% endblock extra_style %}
 
 {% block content %}
-<h1>Your shopping cart</h1>
-<table>
-    <thead>
-    <tr>
 
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Unit price</th>
-        <th>Price</th>
-        <th>Total</th>
-        <th>Remove</th>
+{% if cart %}
 
-    </tr>
-    </thead>
-    <tbody>
-    {% for key, value in cart.cart.items %}
-    <tr>
+{% with class_name='table_cart' %}
+{% include 'cart/blocks/table.html' %}
+{% endwith %}
 
-        <td>{{ value.name }}</td>
-        <td>{{ value.quantity }}</td>
-        <td>{{ value.price }} $</td>
-        <td>{{ value.total_price }} $</td>
-        <td>{{ value.total }} $</td>
-        <td>
-            <a href="{% url 'cart_remove' key%}">Remove</a>
-        </td>
-    </tr>
+<form action="{% url 'orders:order_create' %}">
+    <button class="btn checkout" type="submit">Checkout</button>
+</form>
 
-    {% endfor %}
-    <tr class="total">
-        <td>Total</td>
-        <td colspan="3"></td>
-        <td>{{ cart.get_total_sum }} $</td>
-    </tr>
-    </tbody>
-</table>
-<a href="{% url 'orders:order_create' %}" class="button">
-    Checkout
-</a>
-{% endblock %}
+{% else %}
+{% include 'cart/blocks/empty_cart.html' %}
+{% endif %}
+
+{% endblock content %}

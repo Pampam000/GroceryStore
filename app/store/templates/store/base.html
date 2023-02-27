@@ -6,36 +6,37 @@
     <title>{{ title }}</title>
 
     <link type="text/css"
-          href="{% static 'store/css/styles.css' %}" rel="stylesheet">
+          href="{% static 'store/css/header.css' %}" rel="stylesheet">
+    <link type="text/css"
+          href="{% static 'store/css/page.css' %}" rel="stylesheet">
+
+    {% block extra_style %}
+    {% endblock extra_style %}
+
 </head>
 <body>
 <div class="header__content">
-    <div>
-        <nav class="header__navigation">
-            <ul class="header__navigation-list">
-                {% for m in menu %}
-                <li class="header__navigation-list-item">
-                    <a href="{% url m.url_name %}">{{ m.title }}</a>
-                </li>
-                {% endfor %}
-            </ul>
+    {% with class_name='header__left-section' %}
+    {% include 'store/blocks/header.html' %}
+    {% endwith %}
 
-        </nav>
-    </div>
-
-    <div class="header__right-section">
-        <ul class="header__navigation-list">
-
-            {% for s in right_section %}
-            <li class="header__navigation-list-item">
-                <a href="{% url s.url_name %}">{{ s.title }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
+    {% with menu=right_section %}
+    {% with class_name='header__right-section' %}
+    {% include 'store/blocks/header.html' %}
+    {% endwith %}
+    {% endwith %}
 
 </div>
-{% block content %}
-{% endblock %}
+
+<div class="page">
+    <div class="page__main-content-wrapper">
+        <div class="page__main-content">
+            <h2 class="page__title">{{ page_title }}</h2>
+            {% block content %}
+            {% endblock content%}
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

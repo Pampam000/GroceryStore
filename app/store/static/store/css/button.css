@@ -1,0 +1,13 @@
+.btn {
+  width: 150px;
+  height: 40px;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+.remove {
+  border:none;
+}
+
