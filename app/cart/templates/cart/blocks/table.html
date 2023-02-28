@@ -1,42 +1,46 @@
 <table class={{class_name}}>
+
     <thead>
     <tr>
-        <th>Image</th>
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Old price</th>
-        <th>New Price</th>
-        <th>Total</th>
-        <th>Remove</th>
-
+        {% for t in table_headers %}
+        <th>{{ t }}</th>
+        {% endfor %}
+        <th> Remove</th>
     </tr>
     </thead>
+
     <tbody>
     {% for key, value in cart.items %}
     <tr>
 
+        {% for key1, value1 in value.items %}
+        {% if key1 == "Image" %}
         <td>
             <a href="{% url 'store:product' key %}">
-                <img src="{{ value.photo }}">
+                <img src="{{ value1 }}">
             </a>
         </td>
-        <td>{{ value.name }}</td>
-        <td>{{ value.quantity }}</td>
-        <td>{{ value.price }} $</td>
-        <td>{{ value.total_price }} $</td>
-        <td>{{ value.total }} $</td>
+        {% else %}
+
+        <td>{{ value1 }}</td>
+        {% endif %}
+        {% endfor %}
+
         <td>
             <form action="{% url 'cart_remove' key %}">
-                <button class="remove">Remove</button>
+                <button class="remove"> Remove</button>
             </form>
         </td>
+
     </tr>
-
     {% endfor %}
-    <tr>
+    </tbody>
 
+    <tfoot>
+    <tr>
         <td colspan="5"></td>
         <td>{{ total_sum }} $</td>
     </tr>
-    </tbody>
+    </tfoot>
+
 </table>

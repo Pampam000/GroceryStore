@@ -1,7 +1,6 @@
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render, redirect
 
-from app import settings
 from store.services.views import MenuMixin
 from .cart import Cart
 from .forms import CartAddProductForm
@@ -26,13 +25,11 @@ class CartAddItemView(CartMixin):
 class CartDetailView(MenuMixin, CartMixin):
 
     def get_context_data(self):
-        print(dict(**self.request.session))
-        if not self.request.session.get(settings.CART_SESSION_ID):
-            self.request.session[settings.CART_SESSION_ID] = {}
-        cart = Cart(self.request.session)
+        total_sum = self.cart.get_total_sum()
+        table_headers = self.cart.get_th_for_table()
         header_context = self.get_header_context(
-            title="Cart", page_title="Your cart", cart=cart.cart,
-            total_sum=cart.get_total_sum())
+            title="Cart", page_title="Your cart", cart=self.cart.cart,
+            total_sum=total_sum, table_headers=table_headers)
         return header_context
 
     def get(self, request: WSGIRequest):

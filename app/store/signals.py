@@ -1,6 +1,7 @@
 from django.db.models import F
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.utils.text import slugify
 
 from .models import ProductBatch, Product, Category
 
@@ -24,6 +25,23 @@ def pre_delete_category(**kwargs):
     delete_all_photo(**kwargs)
 
 
+@receiver(pre_save, sender=Product)
+def create_slug_for_product(**kwargs):
+    create_slug(**kwargs)
+
+
+@receiver(pre_save, sender=Category)
+def create_slug_for_category(**kwargs):
+    create_slug(**kwargs)
+
+
 def delete_all_photo(**kwargs):
     instance = kwargs['instance']
     instance.delete_all_instance_photos()
+
+
+def create_slug(**kwargs):
+    instance = kwargs['instance']
+
+    if not instance.pk:  # If instance is not created yet
+        instance.slug = slugify(instance)

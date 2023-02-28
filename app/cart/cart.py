@@ -26,10 +26,11 @@ class Cart:
         Add product to db
         :param product: format is
              {"slug":{
-                    "name": str,
-                    "price": str,
-                    "total_price": str),
-                    "photo": str
+                    "Image": str,
+                    "Product": str,
+                    "Price": str,
+                    "Discount price": str),
+
                     }
             }
         :type product: dict
@@ -39,11 +40,11 @@ class Cart:
         slug = [key for key in product][0]
 
         if slug not in self.cart:
-            product[slug]['quantity'] = quantity
+            product[slug]['Quantity'] = quantity
             self.cart |= product
             self.__set_total_product_price(slug, product)
         else:
-            self.cart[slug]['quantity'] += quantity
+            self.cart[slug]['Quantity'] += quantity
             self.__set_total_product_price(slug, product)
 
         self.__save()
@@ -65,7 +66,7 @@ class Cart:
 
     def check_products_amount(self, products: QuerySet[Product]):
         for slug, product in zip(self.sorted_cart.copy(), products):
-            if self.sorted_cart[slug]['quantity'] > product.amount:
+            if self.sorted_cart[slug]['Quantity'] > product.amount:
 
                 if not product.amount:
                     self.__product_is_over(product, slug)
@@ -79,13 +80,15 @@ class Cart:
         self.check_products_amount(products)
 
         if not self.warning_messages:
-            for slug, product in zip(self.sorted_cart.copy(), products):
-                quantity = self.sorted_cart[slug]['quantity']
-
+            sorted_cart = self.sorted_cart.copy()
+            for slug, product in zip(sorted_cart, products):
+                quantity = self.sorted_cart[slug]['Quantity']
                 OrderItem.objects.create(
-                    order=order, product=product, quantity=quantity)
+                    order=order, product=product, quantity=quantity,
+                    price=sorted_cart[slug]['Price'],
+                    discount_price=sorted_cart[slug]['Discount price'],
+                    total_price=sorted_cart[slug]['Total price'])
 
-                self.__clear()
             return True
         else:
 
@@ -96,14 +99,18 @@ class Cart:
         """
         Calculate the cost of all items in the shopping cart.
         """
-        return sum(Decimal(self.cart[i]['total']) for i in self.cart)
+        return sum(Decimal(self.cart[i]['Total price']) for i in self.cart)
 
-    def __clear(self):
+    def clear(self):
         """
         Delete cart from session
         """
         self.cart = {}
         self.__save()
+
+    def get_th_for_table(self):
+        for slug in self.cart:
+            return self.cart[slug].keys()
 
     def __save(self):
         """
@@ -133,9 +140,8 @@ class Cart:
                                   is_sorted: bool = False):
 
         cart = self.cart if not is_sorted else self.sorted_cart
-
-        cart[slug]['total'] = str(cart[slug]['quantity'] * Decimal(
-            product[slug]['total_price']))
+        cart[slug]['Total price'] = str(cart[slug]['Quantity'] * Decimal(
+            product[slug]['Discount price']))
 
     def __product_is_over(self, product: Product, slug: str):
         msg = messages.PRODUCT_IS_OVER.format(product=product)

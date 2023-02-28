@@ -1,5 +1,5 @@
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView
 from django.views.generic.base import ContextMixin, View
@@ -23,11 +23,15 @@ class OrderCreateView(MenuMixin, CartMixin, CreateView):
             self.__prepare_for_working_with_cart()
             self.cart.check_products_amount(self.products)
 
+        total_sum = self.cart.get_total_sum()
+        table_headers = self.cart.get_th_for_table()
+
         header_context = self.get_header_context(
             title='Create Order', page_title='Making Order',
             cart=self.cart.cart, error_messages=self.cart.error_messages,
             warning_messages=self.cart.warning_messages,
-            total_sum=self.cart.get_total_sum(), btn_text='Place Order')
+            total_sum=total_sum, btn_text='Place Order',
+            table_headers=table_headers)
 
         return context | header_context
 
@@ -39,6 +43,9 @@ class OrderCreateView(MenuMixin, CartMixin, CreateView):
         self.__prepare_for_working_with_cart()
 
         if self.cart.create_order_items(order, self.products):
+            order.price = F('price') + self.cart.get_total_sum()
+            order.save(update_fields=['price'])
+            self.cart.clear()
             return redirect('orders:success', order)
         else:
             order.delete()
