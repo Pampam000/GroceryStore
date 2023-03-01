@@ -1,0 +1,31 @@
+version: "3.8"
+
+volumes:
+  pgdata:
+
+services:
+  web:
+    container_name: web
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    command: poetry run python app/manage.py runserver 0.0.0.0:9000
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    links:
+      - db
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: db01
+      PGDATA: /src/pgdata/
+
+    ports:
+      - "5432:5432"
+
