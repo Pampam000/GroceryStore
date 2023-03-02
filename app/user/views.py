@@ -28,7 +28,7 @@ class CreateUser(MenuMixin, AuthMixin, CreateView):
         """
         user = form.save()
         login(self.request, user)
-        return redirect(self.redirect_to())
+        return self.redirect_to()
 
 
 class LogIn(MenuMixin, AuthMixin, LoginView):
@@ -44,7 +44,7 @@ class LogIn(MenuMixin, AuthMixin, LoginView):
 
     def form_valid(self, form):
         login(self.request, form.get_user())
-        return redirect(self.redirect_to())
+        return self.redirect_to()
 
 
 class LogOut(AuthMixin, View):
@@ -52,4 +52,4 @@ class LogOut(AuthMixin, View):
         self.set_redirect_url()
         redirect_to = self.redirect_to()
         logout(request)
-        return redirect(redirect_to)
+        return redirect_to

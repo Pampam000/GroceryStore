@@ -151,9 +151,9 @@ class Cart:
     def __quantity_is_less_then_possible_amount(self, product: Product,
                                                 slug: str):
         msg = messages.QUANTITY_IS_LESS_THEN_POSSIBLE_AMOUNT.format(
-            quan=self.cart[slug]['quantity'], product=product,
+            quan=self.cart[slug]['Quantity'], product=product,
             amount=product.amount)
         self.warning_messages.append(msg)
-        self.sorted_cart[slug]['quantity'] = product.amount
+        self.sorted_cart[slug]['Quantity'] = product.amount
         self.__set_total_product_price(
             slug, json.loads(product.as_cart_item()), True)

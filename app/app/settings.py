@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -76,16 +78,17 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+load_dotenv()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db01',
-        'USER': 'user',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': '5432',
+        'NAME': os.getenv("POSTGRES_DB"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': os.getenv("POSTGRES_HOST"),
+        'PORT': os.getenv("POSTGRES_PORT"),
     }
-
 }
 
 # Password validation
@@ -134,12 +137,15 @@ MEDIA_URL = '/media/'
 
 # Session
 CART_SESSION_ID = 'cart'
-AUTH_FROM_URL_SESSION_ID = 'auth_from_url'
+PREVIOUS_URL_SESSION_ID = 'previous_url'
 
 # Auth
 AUTH_USER_MODEL = 'user.User'
 
 # Debug Toolbar
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+if DEBUG:
+    import socket  # only if you haven't already imported this
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + \
+                   ["127.0.0.1", "10.0.2.2"]
