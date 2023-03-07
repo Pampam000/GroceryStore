@@ -42,11 +42,7 @@ class Order(m.Model):
 
 
 class OrderItem(m.Model):
-    """
-    pre-delete signal for model 'Product' is registered.
-    Look at orders.signals.pre_delete_product() method for more info.
-    So on_delete=m.DO_NOTHING for 'product' field in this model.
-    """
+
     order = m.ForeignKey(Order, on_delete=m.CASCADE, related_name='items')
     product = m.ForeignKey(Product, on_delete=m.PROTECT,
                            related_name='order_items')

@@ -16,7 +16,14 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
+from rest_framework.routers import DefaultRouter
+
+from .api_router import router
 from . import settings as st
+# necessary imports for api
+from cart.api import routers
+from orders.api import routers
+from store.api import routers
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,7 +33,10 @@ urlpatterns = [
     path('', include(('store.urls', 'store'), namespace='store')),
     path('', include('user.urls')),
 
+    path('api/v1/',include(router.urls)),
+
 ]
+
 
 if st.DEBUG:
     urlpatterns.insert(0, path('__debug__/', include('debug_toolbar.urls')))

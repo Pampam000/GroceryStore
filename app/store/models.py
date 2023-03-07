@@ -26,7 +26,7 @@ class Category(md.PhotoAbstractModel):
 
 
 class Producer(m.Model):
-    name = m.CharField(primary_key=True, max_length=50)
+    name = m.CharField(unique=True, max_length=50)
     country = m.CharField(max_length=20)
 
     def __str__(self):
@@ -38,20 +38,19 @@ class Product(md.PhotoAbstractModel):
         unique_together = ('name', 'weight', 'measure', 'producer')
 
     CHOICES = (
-        (None, 'Measure not chosen'),
-        ('kg', 'Kg'),
+        ('Kg', 'Kg'),
         ('g', 'g'),
-        ('l', 'L'),
-        ('ml', 'mL')
+        ('L', 'L'),
+        ('mL', 'mL'),
     )
 
     name = m.CharField(max_length=50)
     producer = m.ForeignKey('Producer', on_delete=m.PROTECT,
-                            default='Producer1')
+                            default=1)
     weight = m.DecimalField(default=1, max_digits=4, decimal_places=2,
                             validators=[MinValueValidator(limit_value=1)],
                             verbose_name='volume/weight')
-    measure = m.CharField(max_length=5, choices=CHOICES)
+    measure = m.CharField(max_length=5, choices=CHOICES, default='Kg')
     slug = m.SlugField(max_length=100, db_index=True)
     amount = m.PositiveSmallIntegerField(default=0)
     price = m.DecimalField(
@@ -64,7 +63,7 @@ class Product(md.PhotoAbstractModel):
                                   verbose_name='available')
 
     category = m.ForeignKey('Category', on_delete=m.PROTECT,
-                            default='Category1')
+                            default=1)
 
     description = m.TextField(null=True, blank=True)
     discount_size = m.PositiveSmallIntegerField(
@@ -103,7 +102,7 @@ class Product(md.PhotoAbstractModel):
                 "Price": str(self.price),
                 "Discount price": str(self.get_discount_price())}})
 
-    def get_energy_value(self) -> dict:
+    def energy_value(self) -> dict:
         return {
             "Kcal": self.calories,
             "Proteins": self.proteins,
@@ -130,7 +129,8 @@ class ProductBatch(m.Model):
     class Meta:
         verbose_name_plural = 'Product Batches'
 
-    product = m.ForeignKey('Product', on_delete=m.PROTECT)
+    product = m.ForeignKey('Product', on_delete=m.PROTECT,
+                           related_name='product_batches')
     amount = m.PositiveIntegerField(default=100)
     purchase_price = m.DecimalField(
         default=10, decimal_places=2, max_digits=5,

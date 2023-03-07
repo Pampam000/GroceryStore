@@ -3,9 +3,7 @@ S_PHOTO_SIZE = (300, 300)
 M_PHOTO_SIZE = (600, 600)
 
 BASE_MENU = [
-    {'title': 'Home', 'url_name': 'store:home'},
-    {'title': 'Help', 'url_name': 'store:home'},
-    {'title': 'About', 'url_name': 'store:home'}
+    {'title': 'Home', 'url_name': 'store:home'}
 ]
 
 LOGIN_MENU = [

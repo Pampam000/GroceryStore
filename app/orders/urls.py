@@ -6,6 +6,4 @@ urlpatterns = [
     re_path(r'^create/$', v.OrderCreateView.as_view(), name='order_create'),
     path('order-successfully-created/<slug:order>/',
          v.SuccessMakingOrder.as_view(), name='success')
-
 ]
-

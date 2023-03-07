@@ -1,5 +1,5 @@
 from django.db.models import F
-from django.db.models.signals import post_save, pre_delete, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.utils.text import slugify
 
@@ -15,13 +15,13 @@ def post_save_product_batch(**kwargs):
     product.save(update_fields=['amount'])
 
 
-@receiver(pre_delete, sender=Product)
-def pre_delete_product(**kwargs):
+@receiver(post_delete, sender=Product)
+def post_delete_product(**kwargs):
     delete_all_photo(**kwargs)
 
 
-@receiver(pre_delete, sender=Category)
-def pre_delete_category(**kwargs):
+@receiver(post_delete, sender=Category)
+def post_delete_category(**kwargs):
     delete_all_photo(**kwargs)
 
 
@@ -32,7 +32,8 @@ def create_slug_for_product(**kwargs):
 
 @receiver(pre_save, sender=Category)
 def create_slug_for_category(**kwargs):
-    create_slug(**kwargs)
+    instance = kwargs['instance']
+    instance.slug = slugify(instance)
 
 
 def delete_all_photo(**kwargs):

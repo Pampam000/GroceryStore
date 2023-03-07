@@ -21,6 +21,7 @@ services:
       - db
 
   db:
+    container_name: db
     image: postgres:15
     env_file:
       - .env
