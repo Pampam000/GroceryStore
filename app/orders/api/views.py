@@ -1,5 +1,6 @@
 from django.db.models import F
 from rest_framework import status
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -12,6 +13,7 @@ from ..models import OrderItem, Order
 class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = (IsAdminUser,)
 
     def create(self, request, *args, **kwargs):
         cart = Cart(request.session)
@@ -49,3 +51,5 @@ class OrderItemViewSet(ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     http_method_names = ('get', 'delete')
+    permission_classes = (IsAdminUser,)
+

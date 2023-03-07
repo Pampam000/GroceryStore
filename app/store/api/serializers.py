@@ -6,9 +6,9 @@ from ..models import Product, Category, Producer, ProductBatch
 class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
-        fields = ('name', 'producer', 'weight', 'measure', 'photo', 'category',
-                  'amount', 'price', 'is_available', 'description', 'slug',
-                  'discount_size', 'store_conditions', 'energy_value')
+        fields = ('pk', 'name', 'producer', 'weight', 'measure', 'photo',
+                  'category', 'amount', 'price', 'is_available', 'description',
+                  'discount_size', 'store_conditions', 'energy_value', 'slug')
         read_only_fields = ('slug',)
 
 
