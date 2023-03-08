@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
-from rest_framework.routers import DefaultRouter
 
 from .api_router import router
 from . import settings as st
@@ -34,6 +33,7 @@ urlpatterns = [
     path('', include('user.urls')),
 
     path('api/v1/',include(router.urls)),
+    path('api/v1/auth/', include('rest_framework.urls'))
 
 ]
 

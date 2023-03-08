@@ -141,8 +141,16 @@ MEDIA_URL = '/media/'
 CART_SESSION_ID = 'cart'
 PREVIOUS_URL_SESSION_ID = 'previous_url'
 
+# Rest Framework
+API_URL = '/api/v1/'
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 1
+}
+
 # Auth
 AUTH_USER_MODEL = 'user.User'
+LOGIN_REDIRECT_URL = API_URL
 
 # Debug Toolbar
 if DEBUG:
@@ -152,9 +160,4 @@ if DEBUG:
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + \
                    ["127.0.0.1", "10.0.2.2"]
 
-# Rest Framework
-API_URL = 'api/v1/'
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 1
-}
+
