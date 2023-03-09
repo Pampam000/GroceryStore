@@ -6,12 +6,14 @@ from django.views import View
 from ..cart import Cart
 
 
-class CartMixin(LoginRequiredMixin, View):
+class CartView(View):
     cart = None
 
+    def dispatch(self, request: WSGIRequest, *args, **kwargs):
+        self.cart = Cart(request.session)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class LoginRequiredCartView(LoginRequiredMixin, CartView):
     def handle_no_permission(self):
         return redirect('log-in')
-
-    def setup(self, request: WSGIRequest, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.cart = Cart(self.request.session)

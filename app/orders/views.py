@@ -4,14 +4,14 @@ from django.shortcuts import render, redirect
 from django.views.generic import CreateView
 from django.views.generic.base import ContextMixin, View
 
-from cart.services.views import CartMixin
+from cart.services.views import LoginRequiredCartView
 from store.models import Product
 from store.services.views import MenuMixin
 from .forms import OrderCreateForm
 from .models import Order
 
 
-class OrderCreateView(MenuMixin, CartMixin, CreateView):
+class OrderCreateView(MenuMixin, LoginRequiredCartView, CreateView):
     model = Order
     form_class = OrderCreateForm
     template_name = 'orders/create.html'
@@ -59,7 +59,6 @@ class OrderCreateView(MenuMixin, CartMixin, CreateView):
 
 
 class SuccessMakingOrder(MenuMixin, ContextMixin, View):
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         header_context = self.get_header_context(

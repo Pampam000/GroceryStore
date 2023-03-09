@@ -4,14 +4,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from ..cart import Cart
+from ..services.views import CartView
 
 
-class CartViewSet(ViewSet):
+class CartViewSet(CartView, ViewSet):
     http_method_names = ('get',)
     permission_classes = (IsAuthenticated,)
 
     def list(self, request: WSGIRequest):
-        cart = Cart(request.session)
-        result = cart.cart
-        return Response(result, status=status.HTTP_200_OK)
+        return Response(self.cart.cart, status=status.HTTP_200_OK)

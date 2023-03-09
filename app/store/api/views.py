@@ -1,32 +1,19 @@
 import json
 
-import django
-from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from cart.cart import Cart
+from api.services.views import ModelWithProtectedRelationViewSet
 from .permissions import IsAdminOrReadOnly
 from .serializers import ProductSerializer, CategorySerializer, \
     ProducerSerializer, ProductBatchSerializer
 from ..models import Product, Category, Producer, ProductBatch
+from cart.services.views import CartView
 
 
-class DestroyProtectedField(ModelViewSet):
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        try:
-            self.perform_destroy(instance)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except django.db.models.deletion.ProtectedError as e:
-            return Response(data={'detail': str(e)},
-                            status=status.HTTP_409_CONFLICT)
-
-
-class ProductViewSet(DestroyProtectedField):
+class ProductViewSet(CartView, ModelWithProtectedRelationViewSet):
     queryset = Product.objects.select_related()
     serializer_class = ProductSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -34,24 +21,22 @@ class ProductViewSet(DestroyProtectedField):
     @action(detail=True, url_path='add-to-cart',
             permission_classes=(IsAuthenticated,))
     def add_to_cart(self, request, pk):
-        cart = Cart(request.session)
         product = json.loads(self.get_object().as_cart_item())
         quantity = request.data['quantity'] if request.data.get('quantity') \
             else 1
-        cart.add(product, quantity)
-        return Response(cart.cart)
+        self.cart.add(product, quantity)
+        return Response(self.cart.cart)
 
     @action(detail=True, url_path='remove-from-cart',
             permission_classes=(IsAuthenticated,))
     def remove_from_cart(self, request, pk):
-        cart = Cart(request.session)
         product = self.get_object()
         slug = product.slug
-        cart.remove(slug)
-        return Response(cart.cart)
+        self.cart.remove(slug)
+        return Response(self.cart.cart)
 
 
-class CategoryViewSet(DestroyProtectedField):
+class CategoryViewSet(ModelWithProtectedRelationViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -69,7 +54,7 @@ class CategoryViewSet(DestroyProtectedField):
         return Response(serializer.data)
 
 
-class ProducerViewSet(DestroyProtectedField):
+class ProducerViewSet(ModelWithProtectedRelationViewSet):
     queryset = Producer.objects.all()
     serializer_class = ProducerSerializer
     permission_classes = (IsAdminUser,)

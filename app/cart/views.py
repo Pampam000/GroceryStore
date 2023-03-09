@@ -4,10 +4,10 @@ from django.shortcuts import render, redirect
 from store.services.views import MenuMixin
 from .cart import Cart
 from .forms import CartAddProductForm
-from .services.views import CartMixin
+from .services.views import LoginRequiredCartView
 
 
-class CartAddItemView(CartMixin):
+class CartAddItemView(LoginRequiredCartView):
 
     @staticmethod
     def post(request: WSGIRequest):
@@ -22,7 +22,7 @@ class CartAddItemView(CartMixin):
             return redirect(data['from_url'])
 
 
-class CartDetailView(MenuMixin, CartMixin):
+class CartDetailView(MenuMixin, LoginRequiredCartView):
 
     def get_context_data(self):
         total_sum = self.cart.get_total_sum()
@@ -36,7 +36,7 @@ class CartDetailView(MenuMixin, CartMixin):
         return render(request, 'cart/detail.html', self.get_context_data())
 
 
-class CartRemoveItemView(CartMixin):
+class CartRemoveItemView(LoginRequiredCartView):
 
     @staticmethod
     def get(request: WSGIRequest, **kwargs):

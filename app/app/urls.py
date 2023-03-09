@@ -17,12 +17,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 
-from .api_router import router
+from api.router import router
 from . import settings as st
-# necessary imports for api
-from cart.api import routers
-from orders.api import routers
-from store.api import routers
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,11 +29,10 @@ urlpatterns = [
     path('', include(('store.urls', 'store'), namespace='store')),
     path('', include('user.urls')),
 
-    path('api/v1/',include(router.urls)),
+    path('api/v1/', include(router.urls)),
     path('api/v1/auth/', include('rest_framework.urls'))
 
 ]
-
 
 if st.DEBUG:
     urlpatterns.insert(0, path('__debug__/', include('debug_toolbar.urls')))
