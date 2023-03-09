@@ -10,11 +10,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: poetry run python app/manage.py runserver 0.0.0.0:9000
+    command: poetry run python grocerystore/manage.py runserver 0.0.0.0:9000
     ports:
       - "9000:9000"
     volumes:
-      - web_media:/project/app/media/
+      - web_media:/project/grocerystore/media/
     depends_on:
       - db
     links:

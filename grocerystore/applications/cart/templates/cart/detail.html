@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_style %}
+<link type="text/css"
+      href="{% static 'cart/css/cart.css' %}" rel="stylesheet">
+<link type="text/css"
+      href="{% static 'static/css/button.css' %}" rel="stylesheet">
+{% endblock extra_style %}
+
+{% block content %}
+
+{% if cart %}
+
+{% with class_name='table_cart' %}
+{% include 'blocks/cart/table.html' %}
+{% endwith %}
+
+<form action="{% url 'orders:order_create' %}">
+    <button class="btn checkout" type="submit">Checkout</button>
+</form>
+
+{% else %}
+{% include 'blocks/cart/empty_cart.html' %}
+{% endif %}
+
+{% endblock content %}

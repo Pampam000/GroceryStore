@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_style %}
+<link type="text/css"
+      href="{% static 'store/css/product_detail.css' %}" rel="stylesheet">
+<link type="text/css"
+      href="{% static 'static/css/button.css' %}" rel="stylesheet">
+{% endblock extra_style %}
+
+{% block content %}
+<div class="card-details">
+
+    <div class="card-details__inner">
+
+        <div class="card-details__top-section">
+
+            <div class="card-details__left-section-block-wrapper">
+                <img src="{{product.get_middle_sized_photo}}">
+            </div>
+
+            <div class="card-details__right-section-block-wrapper">
+                {% if product.description %}
+                <div class="card-details__top-section-top-row">
+                    <div class="card-description">
+                        {{ product.description }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class='energy-value'>
+
+                    <div class="card_detail_title">per 100 grams</div>
+                    <div class='energy-value__wrapper-info'>
+                        {% for key, value in product.energy_value.items %}
+                        <div>
+                                <span class='card_detail_value'>
+                                    {{ value }}
+                                </span><br/>
+                            <span class="card_detail_help_info">{{ key }}
+                                </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% for key, value in product.get_detail_info.items %}
+                <div class='card_detail_info'>
+                    <div class="card_detail_title">
+                        {{ key }}
+                    </div>
+                    <div class='card_detail_value'>
+                        {{ value }}
+                    </div>
+                </div>
+                {% endfor %}
+
+
+                <form class="form_add" action="{% url 'cart_add' %}"
+                      method="post">
+
+                    {% for field in form %}
+                    {% with nam=field.name %}
+                    {% if nam == 'product' %}
+                    <input type="hidden"
+                           name={{nam}}
+                           value="{{product.as_cart_item}}">
+                    {% elif nam == 'from_url' %}
+                    <input type="hidden"
+                           name={{nam}}
+                           value="{{product.get_absolute_url}}">
+                    {% else %}
+                    <input class="input_number" type="number"
+                           name="quantity" min="1"
+                           required id="id_quantity">
+                    {% endif %}
+                    {% endwith %}
+                    {% endfor %}
+                    {% csrf_token %}
+
+                    <input class="btn input_submit" type="submit"
+                           value="Add to cart">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

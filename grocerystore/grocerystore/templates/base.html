@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+
+    <link type="text/css"
+          href="{% static '/static/css/header.css' %}" rel="stylesheet">
+    <link type="text/css"
+          href="{% static '/static/css/page.css' %}" rel="stylesheet">
+
+    {% block extra_style %}
+    {% endblock extra_style %}
+
+</head>
+<body>
+<div class="header__content">
+
+    {% with class_name='header__left-section' %}
+    {% include 'blocks/header.html' %}
+    {% endwith %}
+
+    {% with menu=right_section %}
+    {% with class_name='header__right-section' %}
+    {% include 'blocks/header.html' %}
+    {% endwith %}
+    {% endwith %}
+
+</div>
+
+<div class="page">
+    <div class="page__main-content-wrapper">
+        <div class="page__main-content">
+            <h2 class="page__title">{{ page_title }}</h2>
+            {% block content %}
+            {% endblock content%}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

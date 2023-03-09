@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_style %}
+<link type="text/css"
+      href="{% static 'user/css/auth_button.css' %}" rel="stylesheet">
+{% include 'blocks/form_styles.html' %}
+{% endblock extra_style %}
+
+{% block content %}
+{% with btn_class='auth_btn' %}
+{% include 'blocks/form.html' %}
+{% endwith %}
+
+{% endblock content%}
+
+
+
+

@@ -12,4 +12,4 @@ RUN poetry lock --no-update && poetry install
 
 COPY . .
 
-RUN mkdir ./app/media/
+RUN mkdir ./grocerystore/media/
