@@ -26,7 +26,7 @@ urlpatterns = [
     re_path(r'^orders/',
             include(('applications.orders.urls', 'orders'), namespace='orders')),
     path('', include(('applications.store.urls', 'store'), namespace='store')),
-    path('', include('applications.user.urls')),
+    path('', include('applications.users.urls')),
 
     path('api/v1/', include(router.urls)),
     path('api/v1/auth/', include('rest_framework.urls'))

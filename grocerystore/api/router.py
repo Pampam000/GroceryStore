@@ -5,6 +5,7 @@ from applications.store.api.router_params import category_router_params, \
 from applications.cart.api.router_params import cart_router_params
 from applications.orders.api.router_params import order_router_params, \
     order_item_router_params
+from applications.users.api.router_params import user_router_params
 
 router = DefaultRouter()
 
@@ -17,3 +18,5 @@ router.register(**cart_router_params)
 
 router.register(**order_router_params)
 router.register(**order_item_router_params)
+
+router.register(**user_router_params)

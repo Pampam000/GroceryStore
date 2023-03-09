@@ -12,7 +12,7 @@ from .services.views import AuthMixin
 
 class CreateUser(MenuMixin, AuthMixin, CreateView):
     form_class = CreateUserForm
-    template_name = 'user/auth.html'
+    template_name = 'users/auth.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         self.set_redirect_url()
@@ -32,7 +32,7 @@ class CreateUser(MenuMixin, AuthMixin, CreateView):
 
 class LogIn(MenuMixin, AuthMixin, LoginView):
     form_class = AuthenticationForm
-    template_name = 'user/auth.html'
+    template_name = 'users/auth.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         self.set_redirect_url()

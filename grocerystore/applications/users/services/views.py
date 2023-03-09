@@ -20,7 +20,7 @@ class AuthMixin:
         """
 
         http_referer = self.request.META.get("HTTP_REFERER")
-        if http_referer:  # If user went to page after making an action
+        if http_referer:  # If users went to page after making an action
             if all([x not in http_referer for x in config.AUTH_URLS]):
                 self.request.session[settings.PREVIOUS_URL_SESSION_ID] = \
                     self.request.META["HTTP_REFERER"]
@@ -31,5 +31,5 @@ class AuthMixin:
             result = self.request.session[settings.PREVIOUS_URL_SESSION_ID]
             self.request.session[settings.PREVIOUS_URL_SESSION_ID] = ''
             return redirect(result)
-        else:  # If user went to page by changing url in browser
+        else:  # If users went to page by changing url in browser
             return redirect('store:home')

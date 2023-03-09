@@ -2,15 +2,15 @@ from django.contrib import admin
 from django.db import models as m
 
 from applications.store.models import Product
-from applications.user.models import User
+from applications.users.models import User
 
 
 class Order(m.Model):
     """
     User instance could not be deleted.
     On deleting one, it's only 'User' model field 'is_active' will be changed
-    to False. Look at 'user.models.User().delete()' method for more info.
-    So on_delete=m.DO_NOTHING for 'user' field in this model.
+    to False. Look at 'users.models.User().delete()' method for more info.
+    So on_delete=m.DO_NOTHING for 'users' field in this model.
     """
     user = m.ForeignKey(User, on_delete=m.DO_NOTHING, related_name='orders')
     address = m.CharField(max_length=150)

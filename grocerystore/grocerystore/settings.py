@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'applications.store.apps.StoreConfig',
     'applications.cart',
-    'applications.user',
+    'applications.users',
     'applications.orders',
     'rest_framework'
 ]
@@ -152,7 +152,7 @@ REST_FRAMEWORK = {
 }
 
 # Auth
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = API_URL
 
 # Debug Toolbar
