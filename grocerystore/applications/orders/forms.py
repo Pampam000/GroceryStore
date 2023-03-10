@@ -6,8 +6,4 @@ class OrderCreateForm(f.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['address']
-
-    #def is_valid(self):
-
-
+        fields = ('address',)

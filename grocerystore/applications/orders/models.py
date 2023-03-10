@@ -13,7 +13,8 @@ class Order(m.Model):
     So on_delete=m.DO_NOTHING for 'users' field in this model.
     """
     user = m.ForeignKey(User, on_delete=m.DO_NOTHING, related_name='orders')
-    address = m.CharField(max_length=150)
+    address = m.CharField(max_length=150,
+                          help_text="You could input any string here")
     is_paid = m.BooleanField(default=False, verbose_name='paid')
     price = m.DecimalField(default=0, max_digits=8, decimal_places=2)
     created_at = m.DateTimeField(auto_now_add=True)

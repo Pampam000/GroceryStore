@@ -7,5 +7,5 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'is_active', 'date_joined',
-                  'get_orders', 'orders_amount')
-        read_only_fields = ('date_joined',)
+                  'orders', 'orders_amount')
+        read_only_fields = ('date_joined', 'orders')

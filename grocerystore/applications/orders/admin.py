@@ -23,7 +23,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_editable = ('is_paid',)
 
     search_fields = ('id', 'user__username', 'address', 'created_at')
-    search_help_text = "Searching at order id, address, users or created time"
+    search_help_text = "Searching at order id, address, user or created time"
     show_full_result_count = False
 
     list_filter = ('user__username', 'address')

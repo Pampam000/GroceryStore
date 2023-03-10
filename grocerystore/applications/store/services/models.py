@@ -2,6 +2,7 @@ import os.path
 import shutil
 from typing import NamedTuple
 
+import lorem
 from PIL import Image
 from django.core.validators import MaxValueValidator
 from django.db import models as m
@@ -22,6 +23,12 @@ def get_photo_path_for_product(product, photo):
 
 def get_photo_path_for_category(category, photo):
     return f"photos/categories/{category.name}/{photo}"
+
+
+def create_description():
+    sentence0 = lorem.sentence()
+    sentence1 = lorem.sentence()
+    return sentence0 + " " + sentence1
 
 
 class PhotoPath(NamedTuple):

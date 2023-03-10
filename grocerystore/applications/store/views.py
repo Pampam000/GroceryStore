@@ -27,18 +27,19 @@ class ProductListView(MenuMixin, ListView):
     model = Product
     template_name = 'store/list.html'
     context_object_name = 'items'
+    allow_empty = False
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        title = self.kwargs['category_slug']
+        title = context['items'][0].category.name
         header_context = self.get_header_context(title=title, page_title=title)
         return context | header_context
 
     def get_queryset(self):
-        return Product.objects.filter(
-            category__slug=self.kwargs['category_slug']). \
-            select_related('category', 'producer')
+        return list(Product.objects.filter(
+            category__slug=self.kwargs['category_slug']).
+                    select_related('category', 'producer'))
 
 
 class ProductDetail(MenuMixin, DetailView):
@@ -49,7 +50,7 @@ class ProductDetail(MenuMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        title = self.kwargs['name']
+        title = context['object']
         header_context = self.get_header_context(
             title=title, form=CartAddProductForm(), page_title=title)
         return context | header_context

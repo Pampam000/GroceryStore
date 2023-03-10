@@ -1,15 +1,17 @@
 from rest_framework.serializers import ModelSerializer
 
-from ..models import Product, Category, Producer, ProductBatch
+from .services.serializers import ProductMeta
+from ..models import Category, Producer, ProductBatch
 
 
 class ProductSerializer(ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ('pk', 'name', 'producer', 'weight', 'measure', 'photo',
-                  'category', 'amount', 'price', 'is_available', 'description',
-                  'discount_size', 'store_conditions', 'energy_value', 'slug')
-        read_only_fields = ('slug',)
+    class Meta(ProductMeta):
+        pass
+
+
+class ProductSerializerWithDepth(ProductSerializer):
+    class Meta(ProductMeta):
+        depth = 1
 
 
 class CategorySerializer(ModelSerializer):

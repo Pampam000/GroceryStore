@@ -9,7 +9,7 @@ class User(AbstractUser):
         self.save(update_fields=['is_active'])
 
     @admin.display(description="last 5 orders")
-    def get_orders(self):
+    def orders(self):
         result = list(self.orders.all().order_by('-pk')[:5])
         return result if result else None
 

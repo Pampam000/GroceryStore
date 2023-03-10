@@ -1,16 +1,24 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers as s
 
-from applications.orders.models import Order, OrderItem
+from ..models import OrderItem
 
-
-class OrderSerializer(ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ('users', 'address', 'is_paid', 'price', 'created_at')
+from .services.serializers import OrderMeta
 
 
-class OrderItemSerializer(ModelSerializer):
+class AdminOrderSerializer(s.ModelSerializer):
+    class Meta(OrderMeta):
+        pass
+
+
+class OrderSerializer(s.ModelSerializer):
+    user = s.HiddenField(default=s.CurrentUserDefault())
+
+    class Meta(OrderMeta):
+        pass
+
+
+class OrderItemSerializer(s.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ('order', 'product', 'price', 'discount_price', 'quantity',
-                  'total_price')
+        fields = ('pk', 'order', 'product', 'price', 'discount_price',
+                  'quantity', 'total_price')

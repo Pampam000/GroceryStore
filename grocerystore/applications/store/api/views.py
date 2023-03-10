@@ -6,17 +6,30 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.views import ModelWithProtectedRelationViewSet
+from applications.cart.services.views import CartView
 from .permissions import IsAdminOrReadOnly
 from .serializers import ProductSerializer, CategorySerializer, \
-    ProducerSerializer, ProductBatchSerializer
+    ProducerSerializer, ProductBatchSerializer, ProductSerializerWithDepth
+from .services.views import ProductPagination
 from ..models import Product, Category, Producer, ProductBatch
-from applications.cart.services.views import CartView
 
 
 class ProductViewSet(CartView, ModelWithProtectedRelationViewSet):
     queryset = Product.objects.select_related()
-    serializer_class = ProductSerializer
+    serializer_class = ProductSerializerWithDepth
+    serializer_class_without_depth = ProductSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = ProductPagination
+
+    def get_serializer_class(self):
+        """
+        This function correctly displays fields which have a foreign key
+        relations in forms and jsons.
+        """
+        if self.action in ('create', 'update', 'partial_update'):
+            return self.serializer_class_without_depth
+        else:
+            return super().get_serializer_class()
 
     @action(detail=True, url_path='add-to-cart',
             permission_classes=(IsAuthenticated,))

@@ -6,9 +6,9 @@ from .models import User
 
 class AdminUser(UserAdmin):
 
-    list_display = ('username', 'is_active', 'date_joined', 'get_orders',
+    list_display = ('username', 'is_active', 'date_joined', 'orders',
                     'orders_amount')
-    list_display_links = ('username', 'date_joined', 'get_orders',
+    list_display_links = ('username', 'date_joined', 'orders',
                           'orders_amount')
     list_editable = ('is_active',)
 

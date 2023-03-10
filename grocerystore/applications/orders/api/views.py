@@ -1,20 +1,31 @@
 from django.db.models import F
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from applications.cart.services.views import CartView
 from applications.store.models import Product
-from .serializers import OrderItemSerializer, OrderSerializer
+from .serializers import OrderItemSerializer, OrderSerializer, \
+    AdminOrderSerializer
 from ..models import OrderItem, Order
 
 
-class OrderViewSet(CartView, ModelViewSet):
+class AdminOrderViewSet(mixins.RetrieveModelMixin,
+                        mixins.DestroyModelMixin,
+                        mixins.ListModelMixin,
+                        GenericViewSet):
     queryset = Order.objects.all()
+    serializer_class = AdminOrderSerializer
+    permission_classes = (IsAdminUser,)
+
+
+class OrderViewSet(CartView,
+                   mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     serializer_class = OrderSerializer
     permission_classes = (IsAuthenticated,)
-    http_method_names = ('get', 'post')
 
     products = None
 
@@ -48,8 +59,9 @@ class OrderViewSet(CartView, ModelViewSet):
                 response = self.__create_response()
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({'detail': "Cart is empty"},
-                            status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response(
+                {'detail': "Impossible to create the order. Cart is empty."},
+                status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def __prepare_for_working_with_cart(self):
         self.products = Product.objects.filter(slug__in=self.cart.cart)

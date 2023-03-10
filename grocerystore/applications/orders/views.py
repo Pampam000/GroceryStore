@@ -31,7 +31,7 @@ class OrderCreateView(MenuMixin, LoginRequiredCartView, CreateView):
             cart=self.cart.cart, error_messages=self.cart.error_messages,
             warning_messages=self.cart.warning_messages,
             total_sum=total_sum, btn_text='Place Order',
-            table_headers=table_headers)
+            table_headers=table_headers, not_auth_form=True)
 
         return context | header_context
 

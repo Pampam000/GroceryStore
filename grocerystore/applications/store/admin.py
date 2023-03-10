@@ -15,6 +15,7 @@ class ProductAdmin(a.ModelAdmin):
         ('weight', 'measure'),
         ('amount', 'price', 'discount_size'),
         'photo',
+        'description',
         ('calories', 'proteins', 'fats', 'carbohydrates'),
         ('min_temperature', 'max_temperature'),
         'slug'

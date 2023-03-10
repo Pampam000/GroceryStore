@@ -47,8 +47,8 @@ class Product(md.PhotoAbstractModel):
     name = m.CharField(max_length=50)
     producer = m.ForeignKey('Producer', on_delete=m.PROTECT,
                             default=1)
-    weight = m.DecimalField(default=1, max_digits=4, decimal_places=2,
-                            validators=[MinValueValidator(limit_value=1)],
+    weight = m.DecimalField(default=1, max_digits=5, decimal_places=2,
+                            validators=[MinValueValidator(limit_value=0.01)],
                             verbose_name='volume/weight')
     measure = m.CharField(max_length=5, choices=CHOICES, default='Kg')
     slug = m.SlugField(max_length=100, db_index=True)
@@ -65,7 +65,7 @@ class Product(md.PhotoAbstractModel):
     category = m.ForeignKey('Category', on_delete=m.PROTECT,
                             default=1)
 
-    description = m.TextField(null=True, blank=True)
+    description = m.TextField(default=md.create_description)
     discount_size = m.PositiveSmallIntegerField(
         validators=[MaxValueValidator(limit_value=99)], default=10,
         verbose_name='discount')
@@ -90,7 +90,7 @@ class Product(md.PhotoAbstractModel):
             self.__check_temperature_sign(self.min_temperature),
             self.__check_temperature_sign(self.max_temperature))
 
-    def get_discount_price(self) -> d.Decimal:
+    def discount_price(self) -> d.Decimal:
         return (self.price * d.Decimal(str(1 - self.discount_size / 100))). \
             quantize(d.Decimal('1.00'), d.ROUND_HALF_UP)
 
@@ -100,7 +100,7 @@ class Product(md.PhotoAbstractModel):
                 "Image": self.get_extra_small_photo(),
                 "Product": str(self),
                 "Price": str(self.price),
-                "Discount price": str(self.get_discount_price())}})
+                "Discount price": str(self.discount_price())}})
 
     def energy_value(self) -> dict:
         return {
@@ -116,7 +116,7 @@ class Product(md.PhotoAbstractModel):
             "Store at": self.store_conditions(),
             "Discount": f"{self.discount_size} %",
             "Price": f"{self.price} $",
-            "Discount price": f"{self.get_discount_price()} $"
+            "Discount price": f"{self.discount_price()} $"
         }
 
     @staticmethod

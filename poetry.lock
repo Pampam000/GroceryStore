@@ -69,6 +69,18 @@ django = ">=3.0"
 pytz = "*"
 
 [[package]]
+name = "lorem"
+version = "0.1.1"
+description = "Generator for random text that looks like Latin."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "lorem-0.1.1-py3-none-any.whl", hash = "sha256:c9c2914b5a772022417c398bd74b7bbd712e73ff029ba82720855e458f13ae42"},
+    {file = "lorem-0.1.1.tar.gz", hash = "sha256:785f4109a241fc2891e59705e85d065f6e6d3ed6ad91750a8cb54d4f3e59d934"},
+]
+
+[[package]]
 name = "pillow"
 version = "9.4.0"
 description = "Python Imaging Library (Fork)"
@@ -294,4 +306,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9c5c71bd498c136c1e3fec1284be5f9635c7ff1a1a7431ccd38410dc1a713174"
+content-hash = "bffd280a558dbd91f3f6c3816233aa275da7c120c3504e2a21ba698731ec6bd6"
